@@ -127,6 +127,7 @@
 
 % *** GRAPHICS RELATED PACKAGES ***
 %
+\usepackage{graphicx}
 \ifCLASSINFOpdf
   % \usepackage[pdftex]{graphicx}
   % declare the path(s) where your graphic files are
@@ -172,7 +173,7 @@
 
 % *** MATH PACKAGES ***
 %
-%\usepackage{amsmath}
+\usepackage{amsmath}
 % A popular package from the American Mathematical Society that provides
 % many useful and powerful commands for dealing with mathematics.
 %
@@ -230,11 +231,11 @@
 
 
 % *** SUBFIGURE PACKAGES ***
-%\ifCLASSOPTIONcompsoc
-%  \usepackage[caption=false,font=footnotesize,labelfont=sf,textfont=sf]{subfig}
-%\else
-%  \usepackage[caption=false,font=footnotesize]{subfig}
-%\fi
+\ifCLASSOPTIONcompsoc
+  \usepackage[caption=false,font=footnotesize,labelfont=sf,textfont=sf]{subfig}
+\else
+  \usepackage[caption=false,font=footnotesize]{subfig}
+\fi
 % subfig.sty, written by Steven Douglas Cochran, is the modern replacement
 % for subfigure.sty, the latter of which is no longer maintained and is
 % incompatible with some LaTeX packages including fixltx2e. However,
@@ -257,7 +258,7 @@
 
 % *** FLOAT PACKAGES ***
 %
-%\usepackage{fixltx2e}
+\usepackage{fixltx2e}
 % fixltx2e, the successor to the earlier fix2col.sty, was written by
 % Frank Mittelbach and David Carlisle. This package corrects a few problems
 % in the LaTeX2e kernel, the most notable of which is that in current
@@ -273,7 +274,7 @@
 % http://www.ctan.org/pkg/fixltx2e
 
 
-%\usepackage{stfloats}
+\usepackage{stfloats}
 % stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
 % the ability to do double column floats at the bottom of the page as well
 % as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
@@ -369,6 +370,7 @@
 % my own stuff
 \newcommand{\xray}{X-ray~}
 \newcommand{\xrays}{X-rays~}
+\usepackage{cleveref}
 
 
 \begin{document}
@@ -540,17 +542,7 @@ In general, the COR is assumed to be projected onto the center of the detector, 
 A correct calibration can also become almost impossible when the \xray source is very close to the scanned object, as is the case for industrial scanners with resolutions on the micrometer scale \cite{azevedo90}.
 In this paper, different techniques and algorithms for the determination of the center of rotation are explained, which can be found in the literature.
 % You must have at least 2 lines in the paragraph with the drop letter
-% (should never be an issue)
-
-
-\subsection{Subsection Heading Here}
-Subsection text here.
-
-% needed in second column of first page if using \IEEEpubid
-%\IEEEpubidadjcol
-
-\subsubsection{Subsubsection Heading Here}
-Subsubsection text here~\cite{WilsonT06} and here.
+% (should never be an 
 
 
 % An example of a floating figure using the graphicx package.
@@ -649,7 +641,68 @@ Subsubsection text here~\cite{WilsonT06} and here.
 % \fnbelowfloat command of the stfloats package.
 
 
+\section{Prerequisites}
+In order to explain the problem of inaccurate COR assumption in tomographic reconstruction, some prerquisite knowledge about CT will be briefly explained in this section.
 
+\subsection{Image Acquisition in CT}
+This subsection will briefly explain how images are typically aquired in CT.
+
+In \xray imaging, an \xray source (e.g. \xray tube) is used to generate photons which then run through an object.
+The capability of the photons to penetrate matter, depends on the material, which means that the decrease in number of photons along the incident beam is different for different materials.
+The decrease in the number of photons, or attenuation, results from the photons being absorbed or scattered as they travel through the matters~\cite{Buzug2008_chap1}.
+Using an \xray detector, the photon count after matter penetration can be measured and thus the attenuation along the beam from the source to the detector.
+The measured quantity can be interpreted as the projection of all attenuations along the ray.
+
+However, a single projection is not sufficient to deduce the attenuation strengths within the object. 
+To locate regions of high and low attenuation, multiple projections from different sides of the object are required.
+Therefore the object is placed on a rotary table or the imaging aparatus (\xray source and detector) is rotated around the object.
+
+
+\subsection{CT Geometries}
+This subsection will briefly explain the most common geometries in CT, that is the setup of \xray source and detector and the ray projections which result from it.
+
+\subsubsection{Parallel Beam}
+The simplest geometry in CT (from a mathematical point of view) is the parallel beam geometry.
+Here all rays are parallel that are emitted from the same side of the object.
+\Cref{fig:parallelbeam} shows a schematic of this geometry with the resulting signal.
+%
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\linewidth]{img/parallel_beam_geometry}
+\caption{Parallel beam geometry with the source moving perpendicular to the ray direction for sampling a 1-dimensional image (graph). \cite{Buzug2008_chap4}}
+\label{fig:parallelbeam}
+\end{figure}
+%
+This projection geometry can be mathematically expressed with the Radon transform.
+When we think of the object as a function of attenuation coefficients $f(x,y)$ and the measured signal as a function of projected coefficients $R(r,\alpha)$ where $r$ is the position on the detector and $\alpha$ is the rotation angle at which the signal is obtained, then
+\begin{equation}
+R(r,\alpha) = \int_{-\infty}^{\infty} f(r\;cos\;\alpha + t\;sin\;\alpha, r\;sin\;\alpha-t\;cos\;\alpha)\;dt.
+\end{equation} 
+The parameter $t$ is the position on the ray that hits the detector at $r$ and angle $\alpha$, which makes it clear that the projection $R(r,\alpha)$ is the integral along a ray through the object $f(x,y)$.
+
+\subsubsection{Fan Beam}
+
+\subsubsection{Cone Beam}
+
+\subsection{Reconstruction}
+
+\subsubsection{Filtered Back Projection}
+
+\section{COR Determination}
+
+\subsection{Sinogram Based Methods}
+
+\subsubsection{High Density Feature}
+
+\subsubsection{Center of Mass}
+
+\subsubsection{Cross-Correlation}
+
+\subsection{Reconstruction Based Methods}
+
+\subsubsection{Integral of Negativity}
+
+\subsubsection{Histogram Entropy}
 
 \section{Conclusion}
 The conclusion goes here.
@@ -674,13 +727,7 @@ The conclusion goes here.
 
 
 \appendices
-\section{Proof of the First Zonklar Equation}
-Appendix one text goes here.
-
-% you can choose not to have a title for an appendix
-% if you want by leaving the argument blank
 \section{}
-Appendix two text goes here.
 
 
 % use section* for acknowledgment
@@ -734,45 +781,6 @@ Appendix two text goes here.
 %
 %\end{thebibliography}
 
-% biography section
-% 
-% If you have an EPS/PDF photo (graphicx package needed) extra braces are
-% needed around the contents of the optional argument to biography to prevent
-% the LaTeX parser from getting confused when it sees the complicated
-% \includegraphics command within an optional argument. (You could create
-% your own custom macro containing the \includegraphics command to make things
-% simpler here.)
-%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{mshell}}]{Michael Shell}
-% or if you just want to reserve a space for a photo:
-
-\begin{IEEEbiography}{Michael Shell}
-Biography text here.
-\end{IEEEbiography}
-
-% if you will not have a photo at all:
-\begin{IEEEbiographynophoto}{John Doe}
-Biography text here.
-\end{IEEEbiographynophoto}
-
-% insert where needed to balance the two columns on the last page with
-% biographies
-%\newpage
-
-\begin{IEEEbiographynophoto}{Jane Doe}
-Biography text here.
-\end{IEEEbiographynophoto}
-
-% You can push biographies down or up by placing
-% a \vfill before or after them. The appropriate
-% use of \vfill depends on what kind of text is
-% on the last page and whether or not the columns
-% are being equalized.
-
-%\vfill
-
-% Can be used to pull up biographies so that the bottom of the last one
-% is flush with the other column.
-%\enlargethispage{-5in}
 
 
 
