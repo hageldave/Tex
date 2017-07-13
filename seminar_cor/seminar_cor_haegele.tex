@@ -371,6 +371,8 @@
 \newcommand{\xray}{X-ray~}
 \newcommand{\xrays}{X-rays~}
 \usepackage{cleveref}
+\usepackage{cmap}
+\usepackage{csquotes}
 
 
 \begin{document}
@@ -679,6 +681,10 @@ When we think of the object as a function of attenuation coefficients $f(x,y)$ a
 R(r,\alpha) = \int_{-\infty}^{\infty} f(r\;cos\;\alpha + t\;sin\;\alpha, r\;sin\;\alpha-t\;cos\;\alpha)\;dt.
 \end{equation} 
 The parameter $t$ is the position on the ray that hits the detector at $r$ and angle $\alpha$, which makes it clear that the projection $R(r,\alpha)$ is the integral along a ray through the object $f(x,y)$.
+
+Unfortuantely, parallel beam geometry is impractical as a pencil beam \xray source (source emmiting only one ray in a specific direction) would have to be moved parallel to the detector to collect all samples for a single rotation angle, which is very time consuming.
+However, parallel beam geometry occurs at synchrotron facilities \cite{something}.
+
 
 \subsubsection{Fan Beam}
 
