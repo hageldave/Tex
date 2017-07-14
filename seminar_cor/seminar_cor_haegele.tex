@@ -666,27 +666,46 @@ This subsection will briefly explain the most common geometries in CT, that is t
 \subsubsection{Parallel Beam}
 The simplest geometry in CT (from a mathematical point of view) is the parallel beam geometry.
 Here all rays are parallel that are emitted from the same side of the object.
-\Cref{fig:parallelbeam} shows a schematic of this geometry with the resulting signal.
+\Cref{subfig:parallelbeam} shows a schematic of this geometry with the resulting signal.
 %
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{img/parallel_beam_geometry}
-\caption{Parallel beam geometry with the source moving perpendicular to the ray direction for sampling a 1-dimensional image (graph). \cite{Buzug2008_chap4}}
-\label{fig:parallelbeam}
+\subfloat[Parallel Beam]{\includegraphics[width=0.58\linewidth]{img/parallel_beam_geometry}%
+\label{subfig:parallelbeam}}
+\hfil
+\subfloat[Fan Beam]{\includegraphics[width=0.4\linewidth, trim=0 -6cm 0 0]{img/fanbeamgeometry}%
+\label{fig_second_case}}
+\caption{Parallel beam and fan beam geometry. In parallel beam the source moving perpendicular to the ray direction for sampling a 1-dimensional image (graph). In fan beam, rays are not perpendicular but instead emmited in fan blade form. $\gamma$ is the rotation angle at which the signal is obtained. \cite{Buzug2008_chap3,Buzug2008_chap4}} 
+\label{fig:parallalandfanbeam}
+\end{figure}
+
+This projection geometry can be mathematically expressed with the Radon transform.
+When we think of the object as a function of attenuation coefficients $f(x,y)$ and the measured signal as a function of projected coefficients $R(r,\gamma)$ where $r$ is the position on the detector and $\gamma$ is the rotation angle at which the signal is obtained, then
+\begin{equation}
+R(r,\gamma) = \int_{-\infty}^{\infty} f(r\;cos(\gamma) + t\;sin(\gamma), r\;sin(\gamma)-t\;cos(\gamma))\;dt.
+\end{equation} 
+The parameter $t$ is the position on the ray that hits the detector at $r$ and angle $\gamma$, which makes it clear that the projection $R(r,\gamma)$ is the integral along a ray through the object $f(x,y)$.
+The sampling of an object in this fashion, results in a so called sinogram.
+The contribution of a specific area of the object to the individual projections, follows a sinusoidal path along the $\gamma$-axis as can be seen in \cref{fig:sinogram_parallel}
+%
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\linewidth]{img/phantomandradon.png}
+\caption{
+A \enquote{smilie} phantom and its corresponding sinogram with $\gamma~\in~[0^\circ,360^\circ]$.
+An imaginary CT would have started with source on top and detector on bottom and then rotated clockwise around the phantom.
+}
+\label{fig:sinogram_parallel}
 \end{figure}
 %
-This projection geometry can be mathematically expressed with the Radon transform.
-When we think of the object as a function of attenuation coefficients $f(x,y)$ and the measured signal as a function of projected coefficients $R(r,\alpha)$ where $r$ is the position on the detector and $\alpha$ is the rotation angle at which the signal is obtained, then
-\begin{equation}
-R(r,\alpha) = \int_{-\infty}^{\infty} f(r\;cos\;\alpha + t\;sin\;\alpha, r\;sin\;\alpha-t\;cos\;\alpha)\;dt.
-\end{equation} 
-The parameter $t$ is the position on the ray that hits the detector at $r$ and angle $\alpha$, which makes it clear that the projection $R(r,\alpha)$ is the integral along a ray through the object $f(x,y)$.
+
 
 Unfortuantely, parallel beam geometry is impractical as a pencil beam \xray source (source emmiting only one ray in a specific direction) would have to be moved parallel to the detector to collect all samples for a single rotation angle, which is very time consuming.
 However, parallel beam geometry occurs at synchrotron facilities \cite{something}.
 
-
 \subsubsection{Fan Beam}
+A more practical geometry is the fan beam, in which a source emits a flat beam that extends to the sides (like a fan blade).
+ 
 
 \subsubsection{Cone Beam}
 
