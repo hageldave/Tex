@@ -703,18 +703,64 @@ An imaginary CT would have started with source on top and detector on bottom and
 \end{figure}
 %
 
-Unfortuantely, parallel beam geometry is impractical as a pencil beam \xray source (source emmiting only one ray in a specific direction) would have to be moved parallel to the detector to collect all samples for a single rotation angle, which is very time consuming.
+Unfortuantely, parallel beam geometry is impractical as a pencil beam \xray source (source emmiting only one ray in a specific direction) would have to be moved parallel to the detector to collect all samples for a single rotation angle, which is very time consuming \cite{Buzug2008_chap7}.
 However, parallel beam geometry occurs at synchrotron facilities \cite{something}.
 
 \subsubsection{Fan Beam}
 A more practical geometry is the fan beam, in which a source emits a flat beam that extends to the sides (like a fan blade). 
 \Cref{subfig:fanbeam} shows a schematic of this geometry.
 Here the projection for a single rotation angle can be obtained at once. 
+The geometry can be defined by the COR it rotates around, the offset of the source to the COR and its aperture angle.
+In clinical practise curved detector rays are used, as shown in \cref{subfig:fanbeam}, to get constant aperture angle steps for each detector cell.
+%
+\begin{figure}[!h]
+\centering
+\subfloat[]{\includegraphics[width=0.43\linewidth]{eps/rebinning.eps}%
+\label{subfig:rebinning1}}
+\hfil
+\subfloat[]{\includegraphics[width=0.51\linewidth]{eps/rebinning_geo.eps}%
+\label{subfig:rebinning2}}
+\caption{
+On the left a schematic is shown with two fan beams with aperture angle $\varphi$ at different rotation angles.
+It can be sen that the outer rays of the two are parallel.
+The maximum distance of two parallel beams is limited by $\varphi$, and the maximum rotation angle $\theta$ at which two
+parallel rays can be obtained is given by $\theta = \psi_{min}+\psi_{max}$ which are the angles from central to outer rays.
+On the right a schematic is shown that points out the correspondence between fan and parallel beam geometry.
+It can be seen that for the red ray which is the ray at rotation angle $\theta$ with deviation angle $\psi$ from the central ray, there exists an angle $\gamma$ in parallel beam geometry so that it is perpendicular to the $r$-axis (i.e. parallel beam detector).
+Figures from~\cite{Buzug2008_chap7}
+}
+\label{fig:rebinning}
+\end{figure}
+%
 
-
+As each ray projection for a single rotation angle in this geometry corresponds to a different ray directions (i.e. rays are not parallel here), the resulting sinogram differs from the sinogram of parallel beam geometry.
+When analyzing this geometry further, it can be seen that the ray projections of a parallel beam geometry are inherent and can be found at different rotation angles.
+Through a process called rebinning, the sinogram of the fan beam can be transformed to parallel beam.
+\Cref{fig:rebinning} illustrates this concept.
  
 
 \subsubsection{Cone Beam}
+The previously introduced geometries are both 2-dimensional (2D) as they described projections within an x-y-plane onto a one dimensional detector.
+To obtain a 3-dimensional (3D) image the scanned object would have to be moved perpendicular to the plane to obtain multiple slice images.
+With the 3D cone beam geometry, this is not necessary as it uses a cone shaped beam that projects onto a 2D flat panel detector.
+%
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{img/conebeam_centralslice.png}
+\caption{
+A cone beam setup with an object on a rotary table.
+It can be seen that only the projection of the central slice is equivalent to a projection in fan beam geometry.
+Other projections that are parallel to the s-axis of the detector use samples at multiple heights of the object.
+Also the projection of the rotation axis onto the detector is shown which in this case is offset from detectors
+z-axis.
+Figure from \cite{Yang2011}
+}
+\label{fig:conebeam}
+\end{figure}
+%
+In \cref{fig:conebeam} it can be seen that there exists a certain line on the detector which will receive the same input as a fan beam detector.
+All other lines read projections through multiple planes of the object and are thus not rebinnable to parallel beam.  
+
 
 \subsection{Reconstruction}
 
