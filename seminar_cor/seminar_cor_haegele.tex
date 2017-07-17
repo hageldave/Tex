@@ -651,7 +651,7 @@ This subsection will briefly explain how images are typically aquired in CT.
 
 In \xray imaging, an \xray source (e.g. \xray tube) is used to generate photons which then run through an object.
 The capability of the photons to penetrate matter, depends on the material, which means that the decrease in number of photons along the incident beam is different for different materials.
-The decrease in the number of photons, or attenuation, results from the photons being absorbed or scattered as they travel through the matters~\cite{Buzug2008_chap1}.
+The decrease in the number of photons, or attenuation, results from the photons being absorbed or scattered as they travel through the matter~\cite{Buzug2008_chap1}.
 Using an \xray detector, the photon count after matter penetration can be measured and thus the attenuation along the beam from the source to the detector.
 The measured quantity can be interpreted as the projection of all attenuations along the ray.
 
@@ -808,13 +808,32 @@ Figure from \cite{Buzug2008_chap5}
 \label{fig:inverseradon}
 \end{figure}
 %
-The problem of applying this algorithm in practise is, that due to the limited angular resolution (i.e. discretization) of the Radon transform the frequency information density in the Fourier space decreases with for higher frequencies \cite{Buzug2008_chap5}.
+The problem of applying this algorithm in practise is, that due to the limited angular resolution (i.e. discretization) of the Radon transform the frequency information density in the Fourier space decreases for higher frequencies \cite{Buzug2008_chap5}.
 In the process of cartesian regridding of the polar coordinates a lot of data for the high frequencies would have to be made up in order to perfrom an inverse fast fourier transform.
 Therefore a different algorithm, the filtered back projection, is used in practise.
 
 \subsubsection{Filtered Back Projection}
+The back projection algorithm reconstructs the original image from a discrete radon transform (i.e. parallel beam sinogram).
+For the reconstruction of a single pixel, the information has to be gathered from the ray projections of the rays that intersect this pixel (see \cref{eq:backprojection}).
+\begin{equation}
+\label{eq:backprojection}
+g(x,y) = \int_0^\pi R(x\;cos(\gamma)+y\;sin(\gamma),\gamma)\;d\gamma. 
+\end{equation}
+
+This can be imagined as smearing the projections over a canvas in their respective directions.
+At first glance this may seem as the correct inversion of the projections but is not.
+This becomes clear when thinking about the original image being a dirac delta (image with all entreis zero except for the central pixel).
+The projections of this image will be 1D dirac deltas, but using the back projection algorithm will not
+restore the 2D dirac but instead smear the 1D diracs also into areas which are supposed to be zero.
+In fact the resulting image looks quite blurry which is due to the back projection equaling to the original image convolved with the point spread function of the imaging system (i.e. the Radon transform) $\frac{1}{|(x,y)|}$ \cite{Buzug2008_chap5}.
+To counter this, the projections first need to be filtered with a high pass filter.
+This introduces negative values in the projections which in the back projection process cancel out positive contributions of other projections.
+As amplifying high frequencies also aplifies noise, there are different filters that can be used in practise \cite{farquhar1998}.
+
 
 \section{COR Determination}
+
+
 
 \subsection{Sinogram Based Methods}
 
