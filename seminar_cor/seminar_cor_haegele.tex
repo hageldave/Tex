@@ -686,6 +686,7 @@ Figures from~\cite{Buzug2008_chap3,Buzug2008_chap4}}
 This projection geometry can be mathematically expressed with the Radon transform.
 When we think of the object as a function of attenuation coefficients $f(x,y)$ and the measured signal as a function of projected coefficients $R(r,\gamma)$ where $r$ is the position on the detector and $\gamma$ is the rotation angle at which the signal is obtained, then
 \begin{equation}
+\label{eq:radon}
 R(r,\gamma) = \int_{-\infty}^{\infty} f(r\;cos(\gamma) + t\;sin(\gamma), r\;sin(\gamma)-t\;cos(\gamma))\;dt.
 \end{equation} 
 The parameter $t$ is the position on the ray that hits the detector at $r$ and angle $\gamma$, which makes it clear that the projection $R(r,\gamma)$ is the integral along a ray through the object $f(x,y)$.
@@ -759,10 +760,57 @@ Figure from \cite{Yang2011}
 \end{figure}
 %
 In \cref{fig:conebeam} it can be seen that there exists a certain line on the detector which will receive the same input as a fan beam detector.
-All other lines read projections through multiple planes of the object and are thus not rebinnable to parallel beam.  
+All other lines read projections through multiple planes of the object and are thus not rebinnable to parallel beam.
 
 
 \subsection{Reconstruction}
+This subsection will explain the process of reconstructing an image from the projections obtained in CT.
+Only the 2D case will be explained as it is relevant for understanding the COR determination techniques later on.
+Also this subsection will only cover Fourier based reconstruction, especially filtered back projection.
+
+The problem of reconstruction can be stated as follows.\\
+Given the Radon transform from \cref{eq:radon} $R(r,\gamma)$ how do we calculate the original signal $f(x,y)$?
+The solution to this would be the inverse Radon transform $R(r,\gamma)^{-1}$.
+To solve this, the Fourier slice theorem can be leveraged.
+%
+\begin{align}
+p(x) &= R(x,0) = \int_{-\infty}^{\infty} f(x,y)\;dy. 
+\\
+\hat{f}(u,v) &= \int_{-\infty}^{\infty}\int_{-\infty}^{\infty}f(x,y)e^{-2\pi i (xu+yv)}\;dx\;dy.
+\\
+s(u) &= \hat{f}(u,0) = \int_{-\infty}^{\infty}\int_{-\infty}^{\infty}f(x,y)e^{-2\pi i xu}\;dx\;dy
+\label{eq:fourierslice}
+\\
+&= \int_{-\infty}^{\infty}\left[\int_{-\infty}^{\infty}f(x,y)\;dy\right]\;e^{-2\pi i xu}\;dx
+\nonumber
+\\
+&= \int_{-\infty}^{\infty}p(x)e^{-2\pi i xu}\;dx = \hat{p}(u).
+\nonumber
+\end{align}
+%
+The proof of the Fourier slice thoerem above (\cref{eq:fourierslice}) states that the Fourier transform $\hat{p}(u)$ of a projection $p(x)$ of $f(x,y)$, is the same as the slice $s(u)$ (parallel to the projection line and through the center) of the Fourrier transform $\hat{f}(u,v)$ of $f(x,y)$.
+In short $s(u) = \hat{p}(u)$.
+
+As th Radon transform is a set of projections the Fourier slice theorem can be used to build the Fourier tranform of the original signal and reconstruct it using the inverse Fourier transform.
+\Cref{fig:inverseradon} illustrates this method.
+%
+\begin{figure}[!h]
+\centering
+\includegraphics[width=\linewidth]{img/inverseradon.png}
+\caption{
+The inverse Radon transform can be calculated using the Fourier slice theorem.
+First all projections are transformed to the Fourier space along the $\xi$-axis ($=r$-axis).
+Then the Fourier transform is built by placing all transformed projections according to their angle into a polar coordinate system.
+The coordinate system thus consists of slices of the Fourier transform of the original signal which can then
+be obtained using an inverse Fourier transform.
+Figure from \cite{Buzug2008_chap5}
+}
+\label{fig:inverseradon}
+\end{figure}
+%
+The problem of applying this algorithm in practise is, that due to the limited angular resolution (i.e. discretization) of the Radon transform the frequency information density in the Fourier space decreases with for higher frequencies \cite{Buzug2008_chap5}.
+In the process of cartesian regridding of the polar coordinates a lot of data for the high frequencies would have to be made up in order to perfrom an inverse fast fourier transform.
+Therefore a different algorithm, the filtered back projection, is used in practise.
 
 \subsubsection{Filtered Back Projection}
 
