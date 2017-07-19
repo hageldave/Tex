@@ -870,6 +870,7 @@ The problem of incorrect assumption of the location of the COR can occur in CT s
 Especially in industrial CT with resolutions on the micrometer scale, calibrating a CT system correctly can be very challenging.
 In parallel beam geometry, a misaligned COR, i.e. the COR is projected onto $\tau$ on the $r$-axis, results in a shift of the sinogram along the $r$-axis by $\tau$.
 \begin{equation}
+\label{eq:radonoffset}
 R_\tau(r,\gamma) = R(r-\tau,\gamma)
 \end{equation}
 The actual problem arises when reconstructing the signal from $R_\tau$ as the algorithms, e.g. filtered back projection (FBP), assume the COR to be in the center.
@@ -894,12 +895,104 @@ With incresing shift, stronger vertical streaking artifacts are introduced into 
 \end{figure}
 %
 
+In order to correctly reconstruct the signal, the COR first need to be determined.
+Several approaches to this problem can be found in the literature, which will be introduced in the following subsections.
+The variety of approaches can subdivided in sinogram base methods, which analyze a sinogram in order to find the COR, and reconstruction based methods, which compare reconstruction results with different COR in an iterative fashion.
 
 \subsection{Sinogram Based Methods}
+In this subsection the approaches that are based on sinogram analysis are introduced.
+The approaches are presentred in chronical order.
 
 \subsubsection{High Density Feature}
+Crawford~et~al.~\cite{crawford1988} presented an approach for finding the COR in which they used two $180^\circ$ opposing projections of a distinct high density feature.
+When locating this feature in the two projections, the COR can be calculated as the sum of the detector coordinates of the feature divided by two.
+This becomes clear when thinking about the feature being offset from the COR by $\delta$ in projection $p_1$.
+The corresponding position of the feature in projection $p_2$ will then be on the opposite side of the COR, offset by $-\delta$ from the COR. \Cref{fig:highdenistyfeature} illustrates this concept.
+%
+\begin{figure}[!h]
+\centering
+\subfloat[phantom]{\includegraphics[width=0.32\linewidth]{img/highdensity_inv.png}}
+\hfil
+\subfloat[sinogram]{\includegraphics[width=0.65\linewidth]{img/highdensityradon_degrees_feature_centerline_horiz.png}}
+\caption{
+A phantom with a high density feature is shown on the left side.
+In corresponding sinogram on the right, the sinusodial trace of the feature can be observed.
+The dotted line indicates the COR in the sinogram.
+It can be seen that the feature locations in $180^\circ$ opposing projections have the same distance to the COR.  
+}
+\label{fig:highdenistyfeature}
+\end{figure}
+%
+
+This approach could also be expanded to use all projections in the sinogram.
+For each opposing pair of projections the COR could be calcualted and then the mean of all CORs will yield the final result.
+This approach can be automated if there esists a distinct global maximum in the projections of the sinogram, otherwise a location of the correct feature is not guaranteed.
+
 
 \subsubsection{Center of Mass}
+Azevedo~et~al.~\cite{azevedo90} proposed a more generally applicable algorithm, in which they replaced the high density feature from \cite{crawford1988} with the center of mass.
+The center of mass of the original signal is a point $(\overline{x},\overline{y}$) which's coordinates can be calculated as follows (calculation of $\overline{y}$ analogous to $\overline{x}$).
+%
+\begin{equation}
+\overline{x} = \frac{
+\int_{-\infty}^{\infty}\int_{-\infty}^{\infty}x\;f(x,y)\;dx\;dy
+}
+{
+\int_{-\infty}^{\infty}\int_{-\infty}^{\infty}f(x,y)\;dx\;dy
+}
+\end{equation}
+%
+As the center of mass of the original signal $f(x,y)$ is projected onto the projection center of mass in parallel beam geometry, it can be used as a reference feature.
+The projection center of mass is dependent on the projection angle and can be calculated as follows.
+%
+\begin{equation}
+\overline{r_\tau}(\gamma) = \frac{
+\int_{-\infty}^{\infty}r\;R_\tau(r,\gamma)\;dr
+}
+{
+\int_{-\infty}^{\infty}R_\tau(r,\gamma)\;dr
+}
+=
+\frac{
+\int_{-\infty}^{\infty}r\;R(r-\tau,\gamma)\;dr
+}
+{
+\int_{-\infty}^{\infty}R_(r-\tau,\gamma)\;dr
+}
+\end{equation}
+%
+where $R_\tau(r,\gamma)$ is the radon transform with COR offset by~$\tau$ (\cref{eq:radonoffset}).
+The previous equation can be simplified to the following.
+%
+\begin{equation}
+\label{eq:projection_centerofmass}
+\overline{r_\tau}(\gamma) = \tau + \overline{r}(\gamma) = \tau + \overline{x}\;cos(\gamma) + \overline{y}\;sin(\gamma)
+\end{equation}
+%
+Using linear regression (least squares) the parameters $\tau$, $\overline{x}$ and $\overline{y}$ can be approximated from the matrix notation of \cref{eq:projection_centerofmass}.
+%
+\begin{equation}
+\begin{pmatrix}
+1 & cos(\gamma_1) & sin(\gamma_1) \\
+\vdots & \vdots & \vdots \\
+1 & cos(\gamma_n) & sin(\gamma_n) 
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+\tau \\
+\overline{x} \\
+\overline{y}
+\end{pmatrix}
+=
+\begin{pmatrix}
+\overline{r_\tau}(\gamma_1) \\
+\vdots \\
+\overline{r_\tau}(\gamma_n)
+\end{pmatrix}
+\end{equation}
+%
+Even though $\overline{x}$ and $\overline{y}$ are not needed for a correct reconstruction, it is a neat bonus.
+
 
 \subsubsection{Cross-Correlation}
 
