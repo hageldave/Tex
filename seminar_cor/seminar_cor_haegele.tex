@@ -828,11 +828,71 @@ restore the 2D dirac but instead smear the 1D diracs also into areas which are s
 In fact the resulting image looks quite blurry which is due to the back projection equaling to the original image convolved with the point spread function of the imaging system (i.e. the Radon transform) $\frac{1}{|(x,y)|}$ \cite{Buzug2008_chap5}.
 To counter this, the projections first need to be filtered with a high pass filter.
 This introduces negative values in the projections which in the back projection process cancel out positive contributions of other projections.
+Figure \cref{fig:backprojection} shows the results of unfiltered and filtered back projection.
 As amplifying high frequencies also aplifies noise, there are different filters that can be used in practise \cite{farquhar1998}.
+%
+\begin{figure}[!h]
+\centering
+\subfloat{\includegraphics[width=0.18\linewidth]{img/bp_02}}
+\hfil
+\subfloat{\includegraphics[width=0.18\linewidth]{img/bp_04}}
+\hfil
+\subfloat{\includegraphics[width=0.18\linewidth]{img/bp_08}}
+\hfil
+\subfloat{\includegraphics[width=0.18\linewidth]{img/bp_16}}
+\hfil
+\subfloat{\includegraphics[width=0.18\linewidth]{img/bp_32}}
+\\
+\subfloat{\includegraphics[width=0.18\linewidth]{img/fbp_02}}
+\hfil
+\subfloat{\includegraphics[width=0.18\linewidth]{img/fbp_04}}
+\hfil
+\subfloat{\includegraphics[width=0.18\linewidth]{img/fbp_08}}
+\hfil
+\subfloat{\includegraphics[width=0.18\linewidth]{img/fbp_16}}
+\hfil
+\subfloat{\includegraphics[width=0.18\linewidth]{img/fbp_32}}
+\caption{
+On the top row, the results of unfiltered back projection are shown. 
+From left to right the number of projections used increases from 2 to 32.
+The resulting image looks blurry.
+On the bottom row the results of filtered back projection are shown.
+The resulting image looks quite crips and edges are clearly visible.
+The Shepp Logan phantom~\cite{shepplogan} was used as source image.  
+}
+\label{fig:backprojection}
+\end{figure}
+%
 
 
 \section{COR Determination}
-
+The problem of incorrect assumption of the location of the COR can occur in CT setups with misaligned source and detector.
+Especially in industrial CT with resolutions on the micrometer scale, calibrating a CT system correctly can be very challenging.
+In parallel beam geometry, a misaligned COR, i.e. the COR is projected onto $\tau$ on the $r$-axis, results in a shift of the sinogram along the $r$-axis by $\tau$.
+\begin{equation}
+R_\tau(r,\gamma) = R(r-\tau,\gamma)
+\end{equation}
+The actual problem arises when reconstructing the signal from $R_\tau$ as the algorithms, e.g. filtered back projection (FBP), assume the COR to be in the center.
+Thus, ray intersections do not lign up correctly and the reconstructed image suffers from streaking artifacts.
+\Cref{fig:shiftfbp} shows the effect of shift of COR in FBP.
+%
+\begin{figure}[!h]
+\centering
+\subfloat[$\tau=0$px]{\includegraphics[width=0.24\linewidth]{img/fbp_shift_0}}
+\hfil
+\subfloat[$\tau=2$px]{\includegraphics[width=0.24\linewidth]{img/fbp_shift_2}}
+\hfil
+\subfloat[$\tau=4$px]{\includegraphics[width=0.24\linewidth]{img/fbp_shift_4}}
+\hfil
+\subfloat[$\tau=8$px]{\includegraphics[width=0.24\linewidth]{img/fbp_shift_8}}
+\caption{
+FBP of the phantom from \cref{fig:sinogram_parallel} with different shifts ($\tau$) of COR.
+The resolution of the sinogram in $r$ direction was 256 pixels.
+With incresing shift, stronger vertical streaking artifacts are introduced into the reconstructed image.
+}
+\label{fig:shiftfbp}
+\end{figure}
+%
 
 
 \subsection{Sinogram Based Methods}
