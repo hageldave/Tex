@@ -865,7 +865,7 @@ The Shepp Logan phantom~\cite{shepplogan} was used as source image.
 %
 
 
-\section{COR Determination}
+\section{COR Determination}\label{sec:cordetermination}
 The problem of incorrect assumption of the location of the COR can occur in CT setups with misaligned source and detector.
 Especially in industrial CT with resolutions on the micrometer scale, calibrating a CT system correctly can be very challenging.
 In parallel beam geometry, a misaligned COR, i.e. the COR is projected onto $\tau$ on the $r$-axis, results in a shift of the sinogram along the $r$-axis by $\tau$.
@@ -992,9 +992,36 @@ Using linear regression (least squares) the parameters $\tau$, $\overline{x}$ an
 \end{equation}
 %
 Even though $\overline{x}$ and $\overline{y}$ are not needed for a correct reconstruction, it is a neat bonus.
-TODO: WRITE ABOUT NOISE AND FAN BEAM STUFF
+
+Azevedo~et~al. showed that their algorithm is quite robust against Gaussian noise and isolated singularities~\cite{azevedo90}.
+Unfortuanately their algorithm is not applicable to fan beam geometry in general the objects center of mass is no longer projected onto the projections center of mass as was the case for parallel beam.
+However for an object function $f(x,y) = \delta(x-\overline{x}, y-\overline{y})$, that is a dirac delta function translated by $(\overline{x},\overline{y})$, the center of mass is projected onto the projections center of mass.
+Therefore this method can be used for calibration (i.e. finding the COR beforehand) using an object that approximates a dirac delta like a thin wire or pin phantom. 
 
 \subsubsection{Cross-Correlation}
+Yang et al.~\cite{Yang2011} proposed another sinogram based method for COR determination using image cross-correllation.
+Given a sinogram in a prallel beam geometry over $360^\circ$ (which can also be obtained by rebinning a fan-beam sinogram), the sinogram is divided in half so that both halfs cover a $180^\circ$ range.
+As the information in both sub sinograms is redundant in that way that they are mirror images of each other,
+flipping one of them will result in two sinograms over $180^\circ$ with identical information.
+%
+\begin{equation}
+R(r,\gamma)^{[0,\pi]} = R(-r,\gamma)^{[\pi,2\pi]}
+\end{equation}
+%
+A shift of COR, as explained in the beginning of \cref{sec:cordetermination}, results in a shift of the sinogram along the $r$-axis.
+Thus, the two sub sinograms are identical under this shift.
+%
+\begin{equation}
+R_\tau(r+\tau,\gamma)^{[0,\pi]} = R_\tau(-(r+\tau),\gamma)^{[\pi,2\pi]}
+\end{equation}
+%
+Using the 1D the cross correlation of the two sinograms along the $r$-axis, the shift can be determined as follows.
+%
+\begin{equation}
+2\tau = \underset{r}{arg\,max}\quad R_\tau(r,\gamma)^{[0,\pi]} \star R_\tau(-r,\gamma)^{[\pi,2\pi]}
+\end{equation}
+%  
+
 
 \subsection{Reconstruction Based Methods}
 
