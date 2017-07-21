@@ -740,7 +740,7 @@ Through a process called rebinning, the sinogram of the fan beam can be transfor
 \Cref{fig:rebinning} illustrates this concept.
  
 
-\subsubsection{Cone Beam}
+\subsubsection{Cone Beam}\label{sssec:conebeam}
 The previously introduced geometries are both 2-dimensional (2D) as they described projections within an x-y-plane onto a one dimensional detector.
 To obtain a 3-dimensional (3D) image the scanned object would have to be moved perpendicular to the plane to obtain multiple slice images.
 With the 3D cone beam geometry, this is not necessary as it uses a cone shaped beam that projects onto a 2D flat panel detector.
@@ -1008,19 +1008,22 @@ flipping one of them will result in two sinograms over $180^\circ$ with identica
 R(r,\gamma)^{[0,\pi]} = R(-r,\gamma)^{[\pi,2\pi]}
 \end{equation}
 %
-A shift of COR, as explained in the beginning of \cref{sec:cordetermination}, results in a shift of the sinogram along the $r$-axis.
+A shift of COR, as explained in the beginning of \cref{sec:cordetermination}, results in a shift of the sinogram along the $r$-axis (see~\cref{eq:radonoffset}).
 Thus, the two sub sinograms are identical under this shift.
 %
 \begin{equation}
 R_\tau(r+\tau,\gamma)^{[0,\pi]} = R_\tau(-(r+\tau),\gamma)^{[\pi,2\pi]}
 \end{equation}
 %
-Using the 1D the cross correlation of the two sinograms along the $r$-axis, the shift can be determined as follows.
+Using the 1D cross correlation of the two sinograms along the $r$-axis, the shift can be determined as follows.
 %
 \begin{equation}
 2\tau = \underset{r}{arg\,max}\quad R_\tau(r,\gamma)^{[0,\pi]} \star R_\tau(-r,\gamma)^{[\pi,2\pi]}
 \end{equation}
-%  
+%
+The authors~\cite{Yang2011} provided evidence that their algorithm is robust against Gaussian noise even for large variance values.
+They also stated that their algorithm can be used for 3D CT with cone beam geometry when using the central slice (see \cref{sssec:conebeam}).
+As locating the central slice is not trivial and depends on calibration as well, it was shown that the algorithm still performs well for sinograms that slightly deviate from that of the central slice. 
 
 
 \subsection{Reconstruction Based Methods}
