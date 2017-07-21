@@ -812,7 +812,7 @@ The problem of applying this algorithm in practise is, that due to the limited a
 In the process of cartesian regridding of the polar coordinates a lot of data for the high frequencies would have to be made up in order to perfrom an inverse fast fourier transform.
 Therefore a different algorithm, the filtered back projection, is used in practise.
 
-\subsubsection{Filtered Back Projection}
+\subsubsection{Filtered Back Projection}\label{sssec:fbp}
 The back projection algorithm reconstructs the original image from a discrete radon transform (i.e. parallel beam sinogram).
 For the reconstruction of a single pixel, the information has to be gathered from the ray projections of the rays that intersect this pixel (see \cref{eq:backprojection}).
 \begin{equation}
@@ -1027,10 +1027,59 @@ As locating the central slice is not trivial and depends on calibration as well,
 
 
 \subsection{Reconstruction Based Methods}
+Reconstruction based methods, as opposed to sinogram based methods, use an iterative approach to finding the COR.
+The individual steps of an iterative algorithm are:
+\begin{enumerate}
+\item reconstruct image with COR $\tau_i$
+\item generate a score for the reconstructed image that indicates the quality of the reconstruction, and thus the correctness of $\tau_i$
+\item repeat for different $\tau_i$
+\item select $\tau_i$ with best score as correct COR
+\end{enumerate}
+This process is of course very time consuming due to the repeating reconstruction step, but is not dependent on specific CT geometries.
+The crucial part of this algorithm is the generation of a score, which requires an image metric $Q(\tilde{f})$ to assess the quality of the reconstructed image $\tilde{f}$.
+In the following two different metrics are introduced.
+
 
 \subsubsection{Integral of Negativity}
+As proposed by Donath et~al.~\cite{donath2006} the integral of negativity can be leveraged to build an image metric $Q_{IN}$.
+%
+\begin{align}
+Q_{IN}(\tilde{f}) &= -\frac{1}{m_0}\;\int_{-\infty}^{\infty}\int_{-\infty}^{\infty}\varepsilon(-\tilde{f}(x,y))\,\tilde{f}(x,y)\;dx\,dy.
+\\
+m_0 &= \int_{-\infty}^{\infty}\int_{-\infty}^{\infty}f(x,y)\;dx\,dy = \int_{-\infty}^{\infty} R(r,\gamma_0)\;dr
+\\
+\varepsilon(a) &= \bigg\{
+\begin{matrix}
+1: & a \geq 0 \\
+0: & else
+\end{matrix}\quad \text{(Heaviside function)} 
+\end{align}
+%
+$Q_{IN}$ is calculated as the ratio of the integral of negativity of the reconstructed image to the zeroth order moment $m_0$ (total mass) of the original signal. 
+Fortunately the original image does not need to be known in order to calculate $m_0$, it is the integral of along the $r$-axis of any projection of the sinogram.
+
+Recalling the filtering step in FBP where negative projection values are introduced to cancel out positive contribution (see~\cref{sssec:fbp}), it makes sense to analyse the negativity of the reconstructed image.
+In a perfect reconstruction the negativity would be zero as the original image had no negative values, so minimizing this metric yields the correct COR.
+
+Brunetti and De~Carlo~\cite{brunetti2004} used a similar metric in their work based on the number of negative values in the reconstructed image.
+
 
 \subsubsection{Histogram Entropy}
+As pointed out by Donath et~al.~\cite{donath2006}, the metric $Q_{IN}$ can only be used for non-negative object functions.
+Therefore they provided another metric based on the histogram entropy that is also applicable when negative attenuation coefficients are present (which can occur when samples are recorded in a surrounding medium e.g. water \cite{donath2006}).
+They defined a metric $Q_H$ as follows.
+%
+\begin{align}
+Q_H(\tilde{f}) &= \frac{H}{H_{max}} 
+\\
+H &= -\int_{-\infty}^{\infty}p(g)\,log_2(h\,p(g))\;dg
+\end{align}
+%
+Here the metric is build by normalizing the entropy $H$ by the maximum entropy $H_{max}$.
+$H$ is a continous version of the discrete entropy for gray-level images, where $p(g)$ is an estimate probability density function for continous gray levels $g$ and $h$ describes the density resolution.
+
+The reasoning for the correctness of this metric is based on the assumption that the reconstructed image consists of homgenious regions, which is at least true for the outer regions that are zero.
+In a reconstruction with wrong COR, additional structures are introduced which smear out the histogram.
 
 \section{Conclusion}
 The conclusion goes here.
