@@ -470,7 +470,13 @@
 % in the abstract or keywords.
 \IEEEtitleabstractindextext{%
 \begin{abstract}
-The abstract goes here.
+This paper will discuss the aspect of the determination of center of rotation in computed tomography.
+An introduction to computed tomography imaging will be given in the beginning as a prerequisite to the actual topic. 
+This will cover different geometries (parallel beam, fan beam and cone beam) which are present in computed tomography and used to model the projection space of a CT-scan as well as basic knowledge about tomographic reconstruction, including the Fourier slice theorem and filtered back projection.
+The problem of wrong center of rotation assumption in tomographic reconstruction will be explained which has the effect of image degradation.
+Different solutions to the determination of the correct location of the center of rotation found in the literature will be presented.
+It is found that the approaches can be split into sinogram and reconstruction based methods, where sinogram based methods analyze the sinogram that is the product of a CT-scan, while reconstruction based methods analyze reconstructed images of different centers of rotation to find the correct one.
+Finally a conclusion summarizing the paper will be drawn.  
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -695,7 +701,7 @@ The contribution of a specific area of the object to the individual projections,
 %
 \begin{figure}[!h]
 \centering
-\includegraphics[width=\linewidth]{img/phantomandradon.png}
+\includegraphics[width=\linewidth]{img/phantomandradondarker.png}
 \caption{
 A \enquote{smilie} phantom and its corresponding sinogram with $\gamma~\in~[0^\circ,360^\circ]$.
 An imaginary CT would have started with source on top and detector on bottom and then rotated clockwise around the phantom to obtain the shown sinogram.
@@ -911,7 +917,7 @@ The corresponding position of the feature in projection $p_2$ will then be on th
 %
 \begin{figure}[!h]
 \centering
-\subfloat[phantom]{\includegraphics[width=0.32\linewidth]{img/highdensity_inv.png}}
+\subfloat[phantom]{\includegraphics[width=0.32\linewidth]{img/highdensity_inv_darker.png}}
 \hfil
 \subfloat[sinogram]{\includegraphics[width=0.65\linewidth]{img/highdensityradon_degrees_feature_centerline_horiz.png}}
 \caption{
