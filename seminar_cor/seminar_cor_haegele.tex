@@ -430,7 +430,7 @@
 
 
 % The paper headers
-\markboth{Seminar on Image Processing - Algorithms and Architectures - Univerity of Stuttgart - IPVS/PAS - SS17}%
+\markboth{Seminar on Image Processing - Algorithms and Architectures - University of Stuttgart - IPVS/PAS - SS17}%
 {H{\"a}gele: Determination of Center of Rotation in Computed Tomography}
 % The only time the second header will appear is for the odd numbered pages
 % after the title page when using the twoside option.
@@ -472,8 +472,8 @@
 \begin{abstract}
 This paper will discuss the aspect of the determination of center of rotation in computed tomography.
 An introduction to computed tomography imaging will be given in the beginning as a prerequisite to the actual topic. 
-This will cover different geometries (parallel beam, fan beam and cone beam) which are present in computed tomography and used to model the projection space of a CT-scan as well as basic knowledge about tomographic reconstruction, including the Fourier slice theorem and filtered back projection.
-The problem of wrong center of rotation assumption in tomographic reconstruction will be explained which has the effect of image degradation.
+This will cover different geometries (parallel beam, fan beam and cone beam), which are present in computed tomography and used to model the projection space of a CT-scan, as well as basic knowledge about tomographic reconstruction, including the Fourier slice theorem and filtered back projection.
+The problem of wrong center of rotation assumption in tomographic reconstruction will be explained, which has the effect of image degradation.
 Different solutions to the determination of the correct location of the center of rotation found in the literature will be presented.
 It is found that the approaches can be split into sinogram and reconstruction based methods, where sinogram based methods analyze the sinogram that is the product of a CT-scan, while reconstruction based methods analyze reconstructed images of different centers of rotation to find the correct one.
 Finally a conclusion summarizing the paper will be drawn.  
@@ -543,7 +543,7 @@ Computer Science, Image Processing, Computed Tomography, Tomographic Reconstruct
 % and "HIS" in caps to complete the first word.
 \IEEEPARstart{I}{n} computed tomography (CT), a set of set of projections is acquired by meassuring the attenuation of \xrays through the scanned object at different rotation angles.
 The \xrays are emmited by a source on one side of the scanned object, intersect with the object, and hit a detector on the other side.
-The resulting meassurement of the detector is a projection of the object's internals.
+The resulting measurement of the detector is a projection of the object's internals.
 Rotating the object and repeating the process results in a set of projections, which can be used to reconstruct an image of the internal structure of the scanned object. 
 For this reconstruction it is mandatory to know the center of rotation (COR), or rather the location of its projection, as slight deviations from the actual COR produce severe artifacts in the reconstructed image.
 In general, the COR is assumed to be projected onto the center of the detector, but this assumption can be violated on badly calibrated CT systems. 
@@ -650,10 +650,10 @@ In this paper, different techniques and algorithms for the determination of the 
 
 
 \section{Prerequisites}
-In order to explain the problem of inaccurate COR assumption in tomographic reconstruction, some prerquisite knowledge about CT will be briefly explained in this section.
+In order to explain the problem of inaccurate COR assumption in tomographic reconstruction, some prerequisite knowledge about CT will be briefly explained in this section.
 
 \subsection{Image Acquisition in CT}\label{ssec:imageacquisition}
-This subsection will briefly explain how images are typically aquired in CT.
+This subsection will briefly explain how images are typically acquired in CT.
 
 In \xray imaging, an \xray source (e.g. \xray tube) is used to generate photons which then run through an object.
 The capability of the photons to penetrate matter, depends on the material, which means that the decrease in number of photons along the incident beam is different for different materials.
@@ -683,7 +683,7 @@ Here all rays are parallel that are emitted from the same side of the object.
 \label{subfig:fanbeam}}
 \caption{Parallel beam and fan beam geometry. 
 In parallel beam the source moving perpendicular to the ray direction for sampling a 1-dimensional image (graph). 
-In fan beam, rays are not perpendicular but instead emmited in fan blade form. 
+In fan beam, rays are not perpendicular but instead emitted in fan blade form. 
 $\gamma$ is the rotation angle at which the signal is obtained. 
 Figures from~\cite{Buzug2008_chap3,Buzug2008_chap4}}
 \label{fig:parallalandfanbeam}
@@ -710,7 +710,7 @@ An imaginary CT would have started with source on top and detector on bottom and
 \end{figure}
 %
 
-Unfortuantely, parallel beam geometry is impractical as a pencil beam \xray source (source emmiting only one ray in a specific direction) would have to be moved parallel to the detector to collect all samples for a single rotation angle, which is very time consuming \cite{Buzug2008_chap7}.
+Unfortuantely, parallel beam geometry is impractical as a pencil beam \xray source (source emitting only one ray in a specific direction) would have to be moved parallel to the detector to collect all samples for a single rotation angle, which is very time consuming \cite{Buzug2008_chap7}.
 However, parallel beam geometry occurs at synchrotron facilities \cite{something}.
 
 \subsubsection{Fan Beam}\label{sssec:fanbeam}
@@ -718,7 +718,7 @@ A more practical geometry is the fan beam, in which a source emits a flat beam t
 \Cref{subfig:fanbeam} shows a schematic of this geometry.
 Here the projection for a single rotation angle can be obtained at once. 
 The geometry can be defined by the COR it rotates around, the offset of the source to the COR and its aperture angle.
-In clinical practise curved detector rays are used, as shown in \cref{subfig:fanbeam}, to get constant aperture angle steps for each detector cell.
+In clinical practice curved detector rays are used, as shown in \cref{subfig:fanbeam}, to get constant aperture angle steps for each detector cell.
 %
 \begin{figure}[!h]
 \centering
@@ -814,9 +814,9 @@ Figure from \cite{Buzug2008_chap5}
 \label{fig:inverseradon}
 \end{figure}
 %
-The problem of applying this algorithm in practise is, that due to the limited angular resolution (i.e. discretization) of the Radon transform the frequency information density in the Fourier space decreases for higher frequencies \cite{Buzug2008_chap5}.
-In the process of cartesian regridding of the polar coordinates a lot of data for the high frequencies would have to be made up in order to perfrom an inverse fast fourier transform.
-Therefore a different algorithm, the filtered back projection, is used in practise.
+The problem of applying this algorithm in practice is, that due to the limited angular resolution (i.e. discretization) of the Radon transform the frequency information density in the Fourier space decreases for higher frequencies \cite{Buzug2008_chap5}.
+In the process of cartesian regridding of the polar coordinates a lot of data for the high frequencies would have to be made up in order to perform an inverse fast Fourier transform.
+Therefore a different algorithm, the filtered back projection, is used in practice.
 
 \subsubsection{Filtered Back Projection}\label{sssec:fbp}
 The back projection algorithm reconstructs the original image from a discrete radon transform (i.e. parallel beam sinogram).
@@ -828,14 +828,14 @@ g(x,y) = \int_0^\pi R(x\;cos(\gamma)+y\;sin(\gamma),\gamma)\;d\gamma.
 
 This can be imagined as smearing the projections over a canvas in their respective directions.
 At first glance this may seem as the correct inversion of the projections but is not.
-This becomes clear when thinking about the original image being a dirac delta (image with all entreis zero except for the central pixel).
-The projections of this image will be 1D dirac deltas, but using the back projection algorithm will not
-restore the 2D dirac but instead smear the 1D diracs also into areas which are supposed to be zero.
+This becomes clear when thinking about the original image being a Dirac delta (image with all entries zero except for the central pixel).
+The projections of this image will be 1D Dirac deltas, but using the back projection algorithm will not
+restore the 2D Dirac but instead smear the 1D Diracs also into areas which are supposed to be zero.
 In fact the resulting image looks quite blurry which is due to the back projection equaling to the original image convolved with the point spread function of the imaging system (i.e. the Radon transform) $\frac{1}{|(x,y)|}$ \cite{Buzug2008_chap5}.
 To counter this, the projections first need to be filtered with a high pass filter.
 This introduces negative values in the projections which in the back projection process cancel out positive contributions of other projections.
 Figure \cref{fig:backprojection} shows the results of unfiltered and filtered back projection.
-As amplifying high frequencies also aplifies noise, there are different filters that can be used in practise \cite{farquhar1998}.
+As amplifying high frequencies also amplifies noise, there are different filters that can be used in practice \cite{farquhar1998}.
 %
 \begin{figure}[!h]
 \centering
@@ -907,7 +907,7 @@ The variety of approaches can subdivided in sinogram base methods, which analyze
 
 \subsection{Sinogram Based Methods}
 In this subsection the approaches that are based on sinogram analysis are introduced.
-The approaches are presentred in chronical order.
+The approaches are presented in chronological order.
 
 \subsubsection{High Density Feature}\label{sssec:highdensityfeature}
 Crawford~et~al.~\cite{crawford1988} presented an approach for finding the COR in which they used two $180^\circ$ opposing projections of a distinct high density feature.
@@ -931,8 +931,8 @@ It can be seen that the feature locations in $180^\circ$ opposing projections ha
 %
 
 This approach could also be expanded to use all projections in the sinogram.
-For each opposing pair of projections the COR could be calcualted and then the mean of all CORs will yield the final result.
-This approach can be automated if there esists a distinct global maximum in the projections of the sinogram, otherwise a location of the correct feature is not guaranteed.
+For each opposing pair of projections the COR could be calculated and then the mean of all CORs will yield the final result.
+This approach can be automated if there exists a distinct global maximum in the projections of the sinogram, otherwise a location of the correct feature is not guaranteed.
 
 
 \subsubsection{Center of Mass}\label{sssec:centerofmass}
@@ -1000,13 +1000,13 @@ Using linear regression (least squares) the parameters $\tau$, $\overline{x}$ an
 Even though $\overline{x}$ and $\overline{y}$ are not needed for a correct reconstruction, it is a neat bonus.
 
 Azevedo~et~al. showed that their algorithm is quite robust against Gaussian noise and isolated singularities~\cite{azevedo90}.
-Unfortuanately their algorithm is not applicable to fan beam geometry in general the objects center of mass is no longer projected onto the projections center of mass as was the case for parallel beam.
-However for an object function $f(x,y) = \delta(x-\overline{x}, y-\overline{y})$, that is a dirac delta function translated by $(\overline{x},\overline{y})$, the center of mass is projected onto the projections center of mass.
-Therefore this method can be used for calibration (i.e. finding the COR beforehand) using an object that approximates a dirac delta like a thin wire or pin phantom. 
+Unfortunately their algorithm is not applicable to fan beam geometry in general the objects center of mass is no longer projected onto the projections center of mass as was the case for parallel beam.
+However for an object function $f(x,y) = \delta(x-\overline{x}, y-\overline{y})$, that is a Dirac delta function translated by $(\overline{x},\overline{y})$, the center of mass is projected onto the projections center of mass.
+Therefore this method can be used for calibration (i.e. finding the COR beforehand) using an object that approximates a Dirac delta like a thin wire or pin phantom. 
 
 \subsubsection{Cross-Correlation}\label{sssec:crosscorrelation}
-Yang et al.~\cite{Yang2011} proposed another sinogram based method for COR determination using image cross-correllation.
-Given a sinogram in a prallel beam geometry over $360^\circ$ (which can also be obtained by rebinning a fan-beam sinogram), the sinogram is divided in half so that both halfs cover a $180^\circ$ range.
+Yang et al.~\cite{Yang2011} proposed another sinogram based method for COR determination using image cross-correlation.
+Given a sinogram in a parallel beam geometry over $360^\circ$ (which can also be obtained by rebinning a fan-beam sinogram), the sinogram is divided in half so that both halfs cover a $180^\circ$ range.
 As the information in both sub sinograms is redundant in that way that they are mirror images of each other,
 flipping one of them will result in two sinograms over $180^\circ$ with identical information.
 %
@@ -1064,7 +1064,7 @@ m_0 &= \int_{-\infty}^{\infty}\int_{-\infty}^{\infty}f(x,y)\;dx\,dy = \int_{-\in
 $Q_{IN}$ is calculated as the ratio of the integral of negativity of the reconstructed image to the zeroth order moment $m_0$ (total mass) of the original signal. 
 Fortunately the original image does not need to be known in order to calculate $m_0$, it is the integral of along the $r$-axis of any projection of the sinogram.
 
-Recalling the filtering step in FBP where negative projection values are introduced to cancel out positive contribution (see~\cref{sssec:fbp}), it makes sense to analyse the negativity of the reconstructed image.
+Recalling the filtering step in FBP where negative projection values are introduced to cancel out positive contribution (see~\cref{sssec:fbp}), it makes sense to analyze the negativity of the reconstructed image.
 In a perfect reconstruction the negativity would be zero as the original image had no negative values, so minimizing this metric yields the correct COR.
 
 Brunetti and De~Carlo~\cite{brunetti2004} used a similar metric in their work based on the number of negative values in the reconstructed image.
@@ -1082,9 +1082,9 @@ H &= -\int_{-\infty}^{\infty}p(g)\,log_2(h\,p(g))\;dg
 \end{align}
 %
 Here the metric is build by normalizing the entropy $H$ by the maximum entropy $H_{max}$.
-$H$ is a continous version of the discrete entropy for gray-level images, where $p(g)$ is an estimate probability density function for continous gray levels $g$ and $h$ describes the density resolution.
+$H$ is a continuous version of the discrete entropy for gray-level images, where $p(g)$ is an estimate probability density function for continuous gray levels $g$ and $h$ describes the density resolution.
 
-The reasoning for the correctness of this metric is based on the assumption that the reconstructed image consists of homgenious regions, which is at least true for the outer regions that are zero.
+The reasoning for the correctness of this metric is based on the assumption that the reconstructed image consists of homogenious regions, which is at least true for the outer regions that are zero.
 In a reconstruction with wrong COR, additional structures are introduced which smear out the histogram.
 
 
@@ -1092,13 +1092,13 @@ In a reconstruction with wrong COR, additional structures are introduced which s
 In this paper about the determination of the COR in CT, a brief introduction was given about image acquisition in CT in the beginning~(\cref{ssec:imageacquisition}).
 Several CT geometries were introduced; 
 the parallel beam geometry~(\cref{sssec:parallelbeam}) which is mathematically described by the Radon transform and which most of the COR determination algorithms assume;
-the fan beam geometry (\cref{sssec:fanbeam}) which is more common and can be transormed to a parallel beam geometry;
+the fan beam geometry (\cref{sssec:fanbeam}) which is more common and can be transformed to a parallel beam geometry;
 and the cone beam geometry (\cref{sssec:conebeam}) which, in contrast to the former, is a 3D geometry.
 In the last part of the introduction to CT imaging, the reconstruction was discussed (\cref{ssec:reconstruction}) in which the Fourier slice theorem was explained as well as the filtered back projection (\cref{sssec:fbp}) as a representative reconstruction algorithm.
 
-In the following section the key topic of this paper was adressed.
+In the following section the key topic of this paper was addressed.
 Firstly the problem of inaccurate or wrong COR assumption for reconstruction was explained (\cref{sec:cordetermination}) which is the image degradation due to artifacts.
-Afterwards the different methdods for COR determination found in the literature were presented which can be classified into sinogram based methods and reconstruction based methods.
+Afterwards the different methods for COR determination found in the literature were presented which can be classified into sinogram based methods and reconstruction based methods.
 
 The sinogram based methods comprise the high density feature tracing method (\cref{sssec:highdensityfeature}), in which a pin phantom can be used to create a distinct sinusodial trace in the sinogram from which the actual COR can be deduced;
 the center of mass method (\cref{sssec:centerofmass}) which is also applicable without the use of a special phantom as it uses the objects center of mass as a tracing point;
