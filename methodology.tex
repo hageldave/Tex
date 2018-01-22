@@ -1,0 +1,50 @@
+\section{Methodology}
+The starting point to the problem are two voxel data sets in regular grids, which were obtained using a CT scanner.
+In both scans the same object was used, but scanned with a different orientation and position the second time.
+The basic idea for determining the rotation and translation of the object between those two data sets, is to first determine the rotation, undo the rotation in the second data set, and then determine the translation.
+This approach is based on the work of Wilson and Theriot~\cite{WilsonT06} who proposed a solution for the analog 2D problem with 3 degrees of Freedom (3DOF).
+They used the well known method of decoupling the rotation from the translation problem using the Fourier transform, leveraging its 
+rotation theorem, which states that the Fourier transform of a rotated 2D signal is equal to the rotated Fourier transform of the original signal.
+
+$\mathcal{F}(f \circ R) = \mathcal{F}(f) \circ R \;\quad$
+with $\mathcal{F}$ as the Fourier transform and $\circ$ as the operator that applies a coordinate transformation, in this case the rotation $R$.
+
+The magnitude spectrum of the Fourier transform yields a translation independent representation of the original data set, leveraging the transform's translation property.
+In 2D the rotation can be solved using a cross-correlation on the polar transformed magnitude spectra, as the angle determination turns into 1D shift determination problem in polar coordinates.
+Similarly the translation can be determined using cross-correlation on the first and the back rotated second dataset.
+
+In 3D all these steps can be used equivalently except for the crucial part of rotation determination from the magnitude spectra, as there is no 3D equivalent for the polar transform and the DOF increase from one in the 2D case to 3 in the 3D case.
+Therefore the main contribution of this paper is the following algorithm for 3D rotation determination.
+Given that under a certain rotation both magnitude spectra are identical, this means that the cross-correlation between the two spectra with correct rotation contains the global maximum correlation coefficient.
+The problem's solution thus can be expressed as follows where $\star$ denotes the cross-correlation operator, $|\mathcal{F}(f)|$ is the Fourier magnitude spectrum of $f$ and $R_{\alpha,\beta,\gamma}$ is the rotation composed of the 3 Euler angles $\alpha,\beta,\gamma$.
+\begin{equation}
+\argmax_{\alpha,\beta,\gamma}\;[\;max\;(|\mathcal{F}(f_1)| \star (|\mathcal{F}(f_2)| \circ R_{\alpha,\beta,\gamma})\;)\;]
+\end{equation}
+As this expression is highly expensive to compute, the magnitude spectra will undergo a spherical coordinate transformation. 
+When the rotation axis of this sphere transform can be arbitrarily chosen, the second magnitude spectrum's coordinate rotation ($R_{\alpha,\beta,\gamma}$) can be replaced by the sphere transform.
+\begin{equation}\label{eq:rotatedspheretransform}
+\Phi_{\alpha,\beta,\gamma}(r,\theta,\varphi) := f(x,y,z) \quad|\quad \text{with} 
+\begin{pmatrix}
+x \\ y \\ z
+\end{pmatrix}
+= R_{\alpha,\beta,\gamma} \; \cdot
+\begin{pmatrix}
+r \sin \theta \cos \varphi \\ 
+r \sin \theta \sin \varphi \\ 
+r \cos \theta
+\end{pmatrix}
+\end{equation}
+Note that for choosing the rotation axis of the sphere transform, only two of the 3 Euler angles are needed as one of them only rotates the rotation axis around itself while translating the angle $\varphi$ to a different starting position. 
+This redundancy is removed by choosing $\gamma=0$.
+Now the correct rotation axis is found when the sphere transforms of both spectra are identical, which is the case when the 1-dimensional cross-correlation along the $\varphi$ axis contains the maximum correlation coefficient.
+The solution for the first 2 Euler angles can be expressed as follows where $m = |\mathcal{F}(f)|$, thus $\Phi_{\alpha,\beta,\gamma}(m)$ denotes the sphere transform of $f$'s Fourier magnitude.
+\begin{equation}
+\argmax_{\alpha,\beta}\;[\;max\;(\Phi_{0,0,0}(m_1) \star \Phi_{\alpha,\beta,0}(m_2)\;)\;]
+\end{equation}
+While finding the maximum correlation coefficient of the cross-correlation, the third Euler angle can be directly determined from the maximum's position in direction of $\varphi$.
+To actually benefit from the representation of magnitudes in spherical coordinates in terms of computation, the sphere transform is reduced to 2D using a fixed radius. 
+The transform then turns into an extractor of a sphere surface, which still contains enough information if the radius is chosen to cover a low frequency of the Fourier magnitudes (high frequencies mostly correspond to noise and thus contain no usable information).
+
+In practice solving for $\alpha$ and $\beta$ is still computationally intensive. 
+Therefore a coarse to fine strategy can be leveraged to incrementally refine the solution for these two angles by trying a small number of different axis orientations at first and then refining the orientation in the area of highest maximum correlation coefficients.
+

@@ -1,0 +1,11 @@
+\section{Related Work}
+
+In the literature, several approaches to image registration problems have been proposed \cite{Brown92imageregistration}.
+The particular problem with 6DOF for 3D rotation and 3D translation has been solved for example using feature detection \cite{wang1996_CT_markers}, a knowledge based technique where the features to be detected have to be known beforehand.
+Other approaches leverage correlation metrics to determine the optimal solution.
+Censi and Carpin~\cite{censi09houghradon} used projections of the data sets into the Hough/Radon domain and exploited its properties to solve for the rotation and translation via a series of cross-correlations.
+Similar to the presented approach, the works of B\"ulow and Birk \cite{bulow13dof6registration} as well as Lucchese et~al.\ \cite{lucchese02rangedatareg} use the Fourrier transform to decouple rotation from translation.
+In contrast to the presented approach Lucchese et~al.\ solve for an estimate rotation axis using a radial projection of the difference between the Fourrier magnitudes, whereas the presented approach cross-correlates a series of spherically transformed magnitude spectra to find the rotation with maximum correlation.
+B\"ulow and Birk also use cross-correlation on the two spherically transformed magnitudes, but solve for the 3 rotation directly from this representation.
+The downside of this technique is, that not all arbitrary rotations can be determined but are limited due to the nature of a spherical coordinate transformation.
+The presented approach does not share this downside as it uses spherical transformations with different axes.

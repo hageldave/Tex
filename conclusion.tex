@@ -1,0 +1,11 @@
+\section{Conclusion and Future Work}
+A correlation based approach to the 6DOF image registration problem consisting of 3D translation and rotation was introduced.
+The algorithm is capable of determining arbitrary rotations of an object between two voxel data sets.
+It leverages the Fourier transform to decouple the rotational from translational information.
+The rotation is calculated using sphere surfaces with different rotation axes of the data sets Fourier magnitude spectra, where the sphere surface with highest cross-correlation coefficient indicates the correct axis and the location of this coefficient indicates the angle of rotation around that axis.
+
+The accuracy of the algorithm is dependent on the resolution of the data sets but could be improved when using a sub pixel accurate cross-correlation as proposed by Campbell and Wu~\cite{campbell08gradientcrosscorr}.
+
+For high resolution data sets, a single sphere surface may contain insufficient data due to the small frequency range of a single radius.
+More information could be obtained when integrating over a radius range in sphere surface extraction. 
+B\"ulow and Birk~\cite{bulow13dof6registration} provided evidence for accuracy improvement in their approach when using multiple layers of several radii.

@@ -1,0 +1,231 @@
+% Currently this document is written in German
+% !TeX spellcheck = de_DE
+
+%Ensure that all odl school LaTeX habits are remarked
+\RequirePackage[l2tabu, orthodox]{nag}
+%Neue deutsche Trennmuster
+%Siehe http://www.ctan.org/pkg/dehyph-exptl und http://projekte.dante.de/Trennmuster/WebHome
+%Nur für pdflatex, nicht für lualatex
+%\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst}
+%\documentclass{lni}
+% in Englisch stattdessen:
+\documentclass[english]{lni}
+
+%% Some packages, no need to be adabted
+
+% enable copy and paste of ligatures (e.g., in "workflow" and umlauts)
+\usepackage{cmap}
+
+%Überschrift des Literaturverzeichnisses
+%Only in German
+\iflnienglish
+\else
+\renewcommand{\refname}{Literaturverzeichnis}
+\fi
+
+%Enable input of umlauts using UTF-8.
+\usepackage[utf8]{inputenc}
+
+\usepackage{graphicx}
+
+\usepackage{fancyhdr}
+
+%Kopf- und Fußzeileneinstellungen
+\fancypagestyle{lnifirstpage}{
+% Löscht alle Kopf- und Fußzeileneinstellungen
+\fancyhf{}
+
+%Kopfzeile
+\fancyhead[RO]{\small Einreichung für: <Konferenz/Workshop>,\linebreak%
+Geplant als Veröffentlichung innerhalb der Lecture Notes in Informatics (LNI)
+}
+%Für den Herausgeber:
+%\fancyhead[RO]{\small <Vorname Nachname [et. al.]> (Hrsg.): <Buchtitel>,\linebreak%
+%Lecture Notes in Informatics (LNI), Gesellschaft für Informatik, Bonn <Jahr> \hspace{5pt} \thepage \hspace{0.05cm}}
+
+%Linie unter Kopfzeile
+\renewcommand{\headrulewidth}{0.4pt}
+}
+
+% Put in the short title (Kurztitle) here
+\fancypagestyle{lni}{
+\fancyhf{}
+%Zu lange Titel müssen von den HerausgeberInnen gekürzt werden, Vorschläge der AutorInnen dazu sind herzlich willkommen.
+\fancyhead[RO]{\small Der Kurztitel \hspace{5pt}
+\thepage \hspace{0.05cm}}
+\fancyhead[LE]{\hspace{0.05cm}\small \thepage \hspace{5pt}
+%Bis zu drei AutorInnen werden alle angeführt, darüber hinaus wird nur die erste Autorin bzw. der erste Autor angeführt und alle Weiteren mit et al.\ abgekürzt.
+%Zu lange AutorInnenlisten müssen von den HerausgeberInnen gekürzt werden.
+Vorname1 Nachname1 und Vorname2 Nachname2}
+\renewcommand{\headrulewidth}{0.4pt}
+}
+
+%if lstlistings is used
+%better approach: use the minted package - see https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings#The_minted_package
+\usepackage{listings}
+
+\iflnienglish
+\usepackage[figurename=Fig., tablename=Tab., small]{caption}
+\else
+\usepackage[figurename=Abb., tablename=Tab., small]{caption}
+\fi
+
+% Listingname heißt nun List.
+\renewcommand{\lstlistingname}{List.}
+
+%for easy quotations: \enquote{text}
+\usepackage{csquotes}
+
+\usepackage[T1]{fontenc}
+
+%enable margin kerning
+\usepackage{microtype}
+
+%for demonstration purposes only
+\usepackage[math]{blindtext}
+
+%tweak \url{...}
+\usepackage{url}
+\urlstyle{same}
+%improve wrapping of URLs - hint by http://tex.stackexchange.com/a/10419/9075
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
+
+%diagonal lines in a table - http://tex.stackexchange.com/questions/17745/diagonal-lines-in-table-cell
+%slashbox is not available in texlive (due to licensing) and also gives bad results. Thus, we use diagbox
+%\usepackage{diagbox}
+
+\usepackage{booktabs}
+
+%required for pdfcomment later
+\usepackage{xcolor}
+
+% new packages BEFORE hyperref
+% See also http://tex.stackexchange.com/questions/1863/which-packages-should-be-loaded-after-hyperref-instead-of-before
+
+%enable hyperref without colors and without bookmarks
+\usepackage[
+%pdfauthor={},
+%pdfsubject={},
+%pdftitle={},
+%pdfkeywords={},
+bookmarks=false,
+breaklinks=true,
+colorlinks=true,
+linkcolor=black,
+citecolor=black,
+urlcolor=black,
+pdfpagelayout=SinglePage,
+pdfstartview=Fit
+]{hyperref}
+%enables correct jumping to figures when referencing
+\usepackage[all]{hypcap}
+
+%enable nice comments
+\usepackage{pdfcomment}
+\newcommand{\commentontext}[2]{\colorbox{yellow!60}{#1}\pdfcomment[color={0.234 0.867 0.211},hoffset=-6pt,voffset=10pt,opacity=0.5]{#2}}
+\newcommand{\commentatside}[1]{\pdfcomment[color={0.045 0.278 0.643},icon=Note]{#1}}
+
+%compatibality with TODO package
+\newcommand{\todo}[1]{\commentatside{#1}}
+
+%enable \cref{...} and \Cref{...} instead of \ref: Type of reference included in the link
+\iflnienglish
+\usepackage[capitalise,nameinlink]{cleveref}
+%Nice formats for \cref
+\crefname{section}{Sect.}{Sect.}
+\Crefname{section}{Section}{Sections}
+\crefname{figure}{Fig.}{Fig.}
+\Crefname{figure}{Figure}{Figures}
+\else
+\usepackage[ngerman,capitalise,nameinlink]{cleveref}
+\fi
+
+%introduce \powerset - hint by http://matheplanet.com/matheplanet/nuke/html/viewtopic.php?topic=136492&post_id=997377
+\DeclareFontFamily{U}{MnSymbolC}{}
+\DeclareSymbolFont{MnSyC}{U}{MnSymbolC}{m}{n}
+\DeclareFontShape{U}{MnSymbolC}{m}{n}{
+    <-6>  MnSymbolC5
+   <6-7>  MnSymbolC6
+   <7-8>  MnSymbolC7
+   <8-9>  MnSymbolC8
+   <9-10> MnSymbolC9
+  <10-12> MnSymbolC10
+  <12->   MnSymbolC12%
+}{}
+\DeclareMathSymbol{\powerset}{\mathord}{MnSyC}{180}
+
+%improve float placement
+%source: http://people.cs.uu.nl/piet/floats/node1.html
+%see also: http://tex.stackexchange.com/a/35130/9075
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\bottomfraction}{0.95}
+\renewcommand{\floatpagefraction}{0.35}
+\setcounter{totalnumber}{5}
+
+% correct bad hyphenation here
+\hyphenation{net-works semi-conduc-tor}
+
+
+%%% Adapt to your needs from here
+
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmax}{argmax}
+
+
+%Beginn der Seitenzählung für diesen Beitrag
+\setcounter{page}{1}
+
+\author{
+David H\"agele\footnote{University of Stuttgart, Abteilung, Anschrift, Postleitzahl Ort, emailadresse@author1}
+}
+
+\title{Automatic Determination of Rotation and Translation Between Two Voxel Data Sets}
+
+\begin{document}
+\maketitle
+
+%hint by http://tex.stackexchange.com/a/30229/9075 and http://tex.stackexchange.com/a/247652/9075
+\thispagestyle{lnifirstpage}
+\pagestyle{lni}
+
+%Auf Anzahl der AutorInnen setzen, damit die weitere Nummerierung der Fußnoten passt
+%Dieser Befehl \verb|\setcounter{footnote}{2}| legt in dem Fall fest, dass 2 Fußnotennummern bereits für die AutorInnen verbraucht wurden, damit die darauf folgenden Fußnoten mit der richtigen Nummerierung (ab 3) fortfahren. Dieser Wert muss an die jeweilige Zahl an AutorInnen bzw. bereits verbrauchte Fußnoten angepasst werden, sofern im weiteren Verlauf Fußnoten verwendet werden.
+\setcounter{footnote}{2}
+
+\begin{abstract}
+Voxel data sets obtained from computed tomography of the same object, may differ in
+translation and rotation. 
+To compare or integrate this data it is important to know these
+parameters.
+\\
+This paper presents an approach to automated determination of three-dimensional rotation and translation between two voxel data sets. 
+The approach is based on decoupling rotation from translation using the magnitude spectrum of a Fourier transformation. 
+Rotation is calculated comparing different cross-corelations of spherical transformations of the Fourier spectra obtained from the data sets. 
+Translation is calculated using cross-correlation on the first and backwards rotated second data set.
+\end{abstract}
+
+\begin{keywords}
+image registration,
+voxel data,
+Fourier analysis,
+computed tomography
+\end{keywords}
+
+\input{introduction.tex}
+
+\input{methodology.tex}
+
+\input{relatedwork.tex}
+
+\input{conclusion.tex}
+
+
+%DO NOT USE \bibliographystyle - it is already done in lni.cls
+%\bibliographystyle{lnig}
+
+\bibliography{paper}
+
+\end{document}

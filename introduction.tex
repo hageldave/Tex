@@ -1,0 +1,12 @@
+\section{Introduction}
+
+In image registration, the process of transforming different sets of data to the same coordinate system \cite{wiki_imageregistration}, it is often required to determine the translation and rotation of objects between several images. 
+This process is necessary to be able to compare or integrate data obtained under different conditions.
+This paper presents an approach to automatically determine the translation and rotation of an object in two three-dimensional (3D) voxel data sets. 
+As a real world use case, the recent work of Guhathakurta et~al.\ \cite{Guhathakurta} can be used. 
+They presented a technique to reduce reconstruction and beam hardening artifacts from computed tomography (CT) by merging two CT scans where the scanned object was rotated for the second scan. 
+In order to combine the voxel data sets it was important to know the exact orientation of the object after rotation, which required a supervised step for aligning the data sets which could be automated using the presented approach.
+
+The solution to this image registration problem was adapted from the two-dimensional (2D) correlation-based approach towards calculation of rotation and translation of moving cells presented by Wilson and Theriot \cite{WilsonT06}.
+The presented approach uses Fourier spectra for the decoupling of rotation from translation and cross-correlation techniques for shift determination.
+The rotation determination process compares cross-correlations of spherical transformations of Fourier spectra to find the best matching 3D rotation.
