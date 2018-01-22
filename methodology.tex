@@ -18,7 +18,7 @@ Therefore the main contribution of this paper is the following algorithm for 3D 
 Given that under a certain rotation both magnitude spectra are identical, this means that the cross-correlation between the two spectra with correct rotation contains the global maximum correlation coefficient.
 The problem's solution thus can be expressed as follows where $\star$ denotes the cross-correlation operator, $|\mathcal{F}(f)|$ is the Fourier magnitude spectrum of $f$ and $R_{\alpha,\beta,\gamma}$ is the rotation composed of the 3 Euler angles $\alpha,\beta,\gamma$.
 \begin{equation}
-\argmax_{\alpha,\beta,\gamma}\;[\;max\;(|\mathcal{F}(f_1)| \star (|\mathcal{F}(f_2)| \circ R_{\alpha,\beta,\gamma})\;)\;]
+\argmax_{\alpha,\beta,\gamma}\;[\;|\mathcal{F}(f_1)| \star (|\mathcal{F}(f_2)| \circ R_{\alpha,\beta,\gamma})\;]
 \end{equation}
 As this expression is highly expensive to compute, the magnitude spectra will undergo a spherical coordinate transformation. 
 When the rotation axis of this sphere transform can be arbitrarily chosen, the second magnitude spectrum's coordinate rotation ($R_{\alpha,\beta,\gamma}$) can be replaced by the sphere transform.
@@ -39,7 +39,7 @@ This redundancy is removed by choosing $\gamma=0$.
 Now the correct rotation axis is found when the sphere transforms of both spectra are identical, which is the case when the 1-dimensional cross-correlation along the $\varphi$ axis contains the maximum correlation coefficient.
 The solution for the first 2 Euler angles can be expressed as follows where $m = |\mathcal{F}(f)|$, thus $\Phi_{\alpha,\beta,\gamma}(m)$ denotes the sphere transform of $f$'s Fourier magnitude.
 \begin{equation}
-\argmax_{\alpha,\beta}\;[\;max\;(\Phi_{0,0,0}(m_1) \star \Phi_{\alpha,\beta,0}(m_2)\;)\;]
+\argmax_{\alpha,\beta}\;[\;\Phi_{0,0,0}(m_1) \star \Phi_{\alpha,\beta,0}(m_2)\;]
 \end{equation}
 While finding the maximum correlation coefficient of the cross-correlation, the third Euler angle can be directly determined from the maximum's position in direction of $\varphi$.
 To actually benefit from the representation of magnitudes in spherical coordinates in terms of computation, the sphere transform is reduced to 2D using a fixed radius. 
