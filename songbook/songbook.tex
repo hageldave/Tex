@@ -1,12 +1,48 @@
 %
-\documentclass[a5paper,twoside,titlepage]{article}
+\documentclass[a5paper,onepage,titlepage]{article}
 
 \usepackage{cmap}
 \usepackage[T1]{fontenc}
 \usepackage{microtype}
 \usepackage{hyperref}
-\usepackage{blindtext}
+\usepackage[top=.6in, bottom=.7in, left=.5in, right=.5in, headsep=.2in]{geometry}
+\usepackage{pxfonts}
+\usepackage{listings}
+\lstdefinelanguage{chordsheet}
+{
+  % list of keywords
+  morekeywords={
+    Intro,
+    Verse,
+    Refrain,
+    Bridge,
+    Interlude,
+    Outro
+  },
+  sensitive=true, % keywords are not case-sensitive
+}
+\lstset{
+language={chordsheet},
+basicstyle=\footnotesize\ttfamily,
+keywordstyle=\bfseries,
+extendedchars=true,
+literate=
+  {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+  {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+  {À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+  {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+  {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+  {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+  {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+  {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+  {ű}{{\H{u}}}1 {Ű}{{\H{U}}}1 {ő}{{\H{o}}}1 {Ő}{{\H{O}}}1
+  {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+  {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
+  {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1,
+}
 
+%\usepackage{blindtext}
 \usepackage{showframe}
 
 \title{The Great Songbook}
@@ -24,6 +60,35 @@
 \tableofcontents
 \addemptypage
 
-\section{Song A}
-\blindtext[4]
+\section{Fire and Rain - James Taylor}
+\lstinputlisting[firstline=3,lastline=47]{chordfiles/chords_fireandrain_jamestaylor}
+\newpage
+\lstinputlisting[firstline=48]{chordfiles/chords_fireandrain_jamestaylor}
+\newpage
+
+\section{Wonderwall - Oasis}
+\lstinputlisting[firstline=3,lastline=48]{chordfiles/chords_wonderwall_oasis}
+\newpage
+\lstinputlisting[firstline=50]{chordfiles/chords_wonderwall_oasis}
+\newpage
+
+\section{Applaus - Sportfreunde Stiller}
+\lstinputlisting[firstline=3,lastline=42]{chordfiles/chords_applaus_sportfreundestiller}
+\newpage
+\lstinputlisting[firstline=43]{chordfiles/chords_applaus_sportfreundestiller}
+\newpage
+
+\section{Wind of Change - Scorpions}
+\lstinputlisting[firstline=3,lastline=45]{chordfiles/chords_windofchange_scorpions}
+\newpage
+\lstinputlisting[firstline=46]{chordfiles/chords_windofchange_scorpions}
+\newpage
+
+\section{Angie - Rolling Stones}
+\lstinputlisting[firstline=3,lastline=50]{chordfiles/chords_angie_rollingstones}
+\newpage
+\lstinputlisting[firstline=43]{chordfiles/chords_angie_rollingstones}
+hier fehlt ein einseitiger song
+\newpage
+
 \end{document}
