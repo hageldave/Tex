@@ -4,6 +4,7 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{bigints}
 \usepackage{xfrac}
 
 \newcommand{\lam}{\lambda}
@@ -60,6 +61,10 @@
 &p_{gradient}(\flow) = ||\;\nabla I_1(\x+\flow(\x))-\nabla I_0(\x)\;||_2^2
 \\\\
 &\Psi_D(s^2) = 2\epsilon^2\sqrt{1+s^2/\epsilon^2}
+\end{align*}
+
+\begin{align*}
+S_w(\x) = \bigintsss w(\tau)\Mat{I_x(\x-\tau)^2 && I_x(\x-\tau)I_y(\x-\tau)\\I_x(\x-\tau)I_y(\x-\tau) && I_y(\x-\tau)^2} \;d\tau
 \end{align*}
 
 
