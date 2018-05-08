@@ -1,0 +1,66 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{xfrac}
+
+\newcommand{\lam}{\lambda}
+\newcommand{\trans}{\quad\bigg|\;}
+\newcommand{\Trans}{\quad\Bigg|\;}
+% matrix shortcut
+\newcommand{\mat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+% matrix shortcut with increased vertical spacing
+\newcommand{\Mat}[1]{\begingroup
+\renewcommand*{\arraystretch}{1.5}
+\mat{#1}
+\endgroup}
+% matrix format but without braces (secretly a matrix)
+\newcommand{\secretMat}[2][r]{\begin{matrix*}[#1] #2 \end{matrix*}}
+% matrix format but without braces (secretly a matrix) with increased vertical spacing
+\newcommand{\SecretMat}[2][r]{\begingroup
+\renewcommand*{\arraystretch}{1.7}
+\secretMat[#1]{#2}
+\endgroup}
+% shortcuts for df/dx stuff in derivative
+\newcommand{\der}{\partial}
+\newcommand{\deriv}[2]{\frac{\der #1}{\der #2}}
+% make star '*' become \cdot (normal multiplication sign)
+\mathcode`\*="8000
+{\catcode`\*\active\gdef*{\cdot}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\flow}{\boldsymbol{u}}
+\newcommand{\x}{\boldsymbol{x}}
+
+
+\begin{document}
+
+\begin{align*}
+& I_0(\x),I_1(\x) : \Omega \subset \Real^2 \rightarrow \Real
+\\\\
+& \flow = \mat{u(\x)\\v(\x)} : \Omega \rightarrow \Real^2
+\\\\
+&I_1(\x+\flow(\x))=I_0(\x)
+\\\\
+&E(\flow)=D(\flow)+\alpha*R(\flow)
+\\\\
+&\int_\Omega p(\flow)\;dx
+\\\\
+&p(\flow) = (\;I_1(\x+\flow(\x))-I_0(\x)\;)^2
+\\\\
+&p(\flow) = ||\;\nabla I_1(\x+\flow(\x))-\nabla I_0(\x)\;||_2^2
+\\\\
+&p(\flow)= ||\;\nabla u\;||_2^2 + ||\;\nabla v\;||_2^2
+\\\\
+&D(\flow) = \int_\Omega \Psi_D(p_{brightness}(\flow)) + \gamma*\Psi_D(p_{gradient}(\flow))\;dx
+\\\\
+&p_{brightness}(\flow) = (\;I_1(\x+\flow(\x))-I_0(\x)\;)^2
+\\\\
+&p_{gradient}(\flow) = ||\;\nabla I_1(\x+\flow(\x))-\nabla I_0(\x)\;||_2^2
+\\\\
+&\Psi_D(s^2) = 2\epsilon^2\sqrt{1+s^2/\epsilon^2}
+\end{align*}
+
+
+\end{document}
