@@ -33,7 +33,10 @@
 \newcommand{\Real}{\mathbb{R}}
 \newcommand{\flow}{\boldsymbol{u}}
 \newcommand{\x}{\boldsymbol{x}}
+\newcommand{\y}{\boldsymbol{y}}
 \newcommand{\ev}{\boldsymbol{r}}
+\newcommand{\aaux}{\boldsymbol{a}}
+\newcommand{\baux}{\boldsymbol{b}}
 \newcommand{\T}{^\top}
 
 
@@ -75,6 +78,31 @@
 &\Psi_1(s^2) = \epsilon^2\ln(1+s^2/\epsilon^2)
 \\\\
 &\Psi_2(s^2) = 2\epsilon^2\sqrt{1+s^2/\epsilon^2}
+\\\\
+&R_2(\flow) = \int_\Omega \inf_{\aaux,\baux}\Big[ S_2(\flow,\aaux,\baux) + \beta * S_{\text{aux}}(\aaux,\baux) \Big]\;dx
+\\\\
+&S_2(\flow,\aaux,\baux) = \sum_{l=1}^2 \Psi_l\Big( (\ev_l\T(\nabla u-\aaux))^2 + (\ev_l\T(\nabla v-\baux)) \Big)
+\\\\
+&S_{\text{aux}}(\aaux,\baux) = \sum_{l=1}^2 \Psi_l\Big( \sum_{k=1}^2 (\ev_k\T \mathcal{J}\aaux\;\ev_l)^2 + (\ev_k\T \mathcal{J}\baux\;\ev_l)^2\;\Big)
+\\\\
+&R(\flow) = \int_\Omega \inf_{\aaux,\baux}\Big[ S_1(\flow) +  S_2(\flow,\aaux,\baux) + \beta * S_{\text{aux}}(\aaux,\baux) \Big]\;dx
+\\\\
+&R(\flow, c) = \int_\Omega \inf_{\aaux,\baux}\Big[ c*S_1(\flow) +  (1-c)*S_2(\flow,\aaux,\baux) + \beta * S_{\text{aux}}(\aaux,\baux) + \phi_\lambda(c)\Big]\;dx
+\\\\
+&c = \frac{1}{1+e^{-\Delta/\lambda}} \quad\text{with}\quad\Delta=T+\frac{1}{|\Omega|}\int_\Omega S_2 - S_1 \; dx
+\end{align*}
+\begin{align*}
+&c = \frac{1}{1+e^{-\Delta/\lambda}} \quad\text{with}\quad\Delta=T+\frac{1}{|\Omega|}\int_\Omega S_2 - S_1 \; dx
+\\\\
+&c_{\text{local}}(\x) = \frac{1}{1+e^{-\Delta/\lambda}} \quad\text{with}\quad\Delta=T+S_2(\x) - S_1(\x)
+\\\\
+&c_{\text{nonlocal}}(\x) = \frac{1}{|\mathcal{N(\x)}|} \int_{\mathcal{N(\x)}}\frac{1}{1+e^{-\Delta/\lam}}\;d\y \quad\text{with}\quad \Delta = T + \frac{1}{|\mathcal{N}(\x)|}\int_{\mathcal{N}(x)} S_2-S_1\;d\y
+\\\\
+&c_{\text{nonlocal}}(\x) = \frac{1}{1+e^{-\Delta/\lambda}} \quad\text{with}\quad \Delta = T + \frac{1}{|\mathcal{N}(\x)|}\int_{\mathcal{N}(x)} S_2-S_1\;d\y
+\\\\
+&z : \Omega \rightarrow \mathbb{R} \quad (\text{a level-set function}) 
+\\
+&c_{\text{region}}(z) = \frac{1}{1+e^{-z/\lambda}} \quad\text{and selection term~}\Phi_\lam(c)\text{~replaced by~} |\nabla c_{\text{region}}(z)|
 \end{align*}
 
 
