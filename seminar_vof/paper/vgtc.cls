@@ -118,12 +118,12 @@
 }
 
 %% the following code has partly been adapted from egpubl.cls
-\newif\ifpdf  % determine if we are running PDFLaTeX or not
-\ifx\pdfoutput\undefined \pdffalse % we are not running PDFLaTeX 
-\else 
+%\newif\ifpdf  % determine if we are running PDFLaTeX or not
+%\ifx\pdfoutput\undefined \pdffalse % we are not running PDFLaTeX 
+%\else 
  %\pdfoutput=1 % we are running PDFLaTeX 
- \pdftrue 
-\fi 
+% \pdftrue 
+%\fi 
 
 \newcommand{\vgtcinsertpkg}{}
 \DeclareOption{electronic}{%
