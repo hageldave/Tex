@@ -59,17 +59,19 @@
 \\\\
 &p(\flow)= ||\;\nabla u\;||_2^2 + ||\;\nabla v\;||_2^2
 \\\\
-&D(\flow) = \int_\Omega \Psi_D(p_{brightness}(\flow)) + \gamma*\Psi_D(p_{gradient}(\flow))\;dx
+&D(\flow) = \int_\Omega \Psi_D(p_{\text{brightness}}(\flow)) + \gamma*\Psi_D(p_{\text{gradient}}(\flow))\;dx
 \\\\
-&p_{brightness}(\flow) = (\;I_1(\x+\flow(\x))-I_0(\x)\;)^2
+&p_{\text{brightness}}(\flow) = (\;I_1(\x+\flow(\x))-I_0(\x)\;)^2
 \\\\
-&p_{gradient}(\flow) = ||\;\nabla I_1(\x+\flow(\x))-\nabla I_0(\x)\;||_2^2
+&p_{\text{gradient}}(\flow) = ||\;\nabla I_1(\x+\flow(\x))-\nabla I_0(\x)\;||_2^2
 \\\\
 &\Psi_D(s^2) = 2\epsilon^2\sqrt{1+s^2/\epsilon^2}
 \end{align*}
 
 \begin{align*}
-&S_w(\x) = \bigintsss w(\tau)\Mat{I_x(\x-\tau)^2 && I_x(\x-\tau)I_y(\x-\tau)\\I_x(\x-\tau)I_y(\x-\tau) && I_y(\x-\tau)^2} \;d\tau
+&S_w(\x) = \bigintsss w(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
+\\\\
+& \Phi_{\text{structure}} = I
 \\\\
 &S_w = Q \Lambda Q\T = \mat{\ev_1&\ev_2}\mat{\lam_1&0\\0&\lam_2}\mat{\ev_1\T\\ \ev_2\T}
 \\\\
@@ -84,6 +86,8 @@
 &S_2(\flow,\aaux,\baux) = \sum_{l=1}^2 \Psi_l\Big( (\ev_l\T(\nabla u-\aaux))^2 + (\ev_l\T(\nabla v-\baux)) \Big)
 \\\\
 &S_{\text{aux}}(\aaux,\baux) = \sum_{l=1}^2 \Psi_l\Big( \sum_{k=1}^2 (\ev_k\T \mathcal{J}\aaux\;\ev_l)^2 + (\ev_k\T \mathcal{J}\baux\;\ev_l)^2\;\Big)
+\\\\
+&S_1(\flow) = \sum_{l=1}^2 \Psi_l\Big((\ev_l\T\nabla u)^2+(\ev_l\T\nabla v)^2\Big)
 \\\\
 &R(\flow) = \int_\Omega \inf_{\aaux,\baux}\Big[ S_1(\flow) +  S_2(\flow,\aaux,\baux) + \beta * S_{\text{aux}}(\aaux,\baux) \Big]\;dx
 \\\\
