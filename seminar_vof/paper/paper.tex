@@ -16,6 +16,47 @@
 \usepackage{mathptmx} 
 \usepackage{graphicx}
 \usepackage{times}
+%\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{bigints}
+\usepackage{xfrac}
+\usepackage{bm}
+
+\newcommand{\lam}{\lambda}
+\newcommand{\trans}{\quad\bigg|\;}
+\newcommand{\Trans}{\quad\Bigg|\;}
+% matrix shortcut
+\newcommand{\mat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+% matrix shortcut with increased vertical spacing
+\newcommand{\Mat}[1]{\begingroup
+\renewcommand*{\arraystretch}{1.5}
+\mat{#1}
+\endgroup}
+% matrix format but without braces (secretly a matrix)
+\newcommand{\secretMat}[2][r]{\begin{matrix*}[#1] #2 \end{matrix*}}
+% matrix format but without braces (secretly a matrix) with increased vertical spacing
+\newcommand{\SecretMat}[2][r]{\begingroup
+\renewcommand*{\arraystretch}{1.7}
+\secretMat[#1]{#2}
+\endgroup}
+% shortcuts for df/dx stuff in derivative
+\newcommand{\der}{\partial}
+\newcommand{\deriv}[2]{\frac{\der #1}{\der #2}}
+% make star '*' become \cdot (normal multiplication sign)
+\mathcode`\*="8000
+{\catcode`\*\active\gdef*{\cdot}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\flow}{\vec{u}}
+\newcommand{\x}{\vec{x}}
+\newcommand{\y}{\vec{y}}
+\newcommand{\ev}{\vec{r}}
+\newcommand{\aaux}{\vec{a}}
+\newcommand{\baux}{\vec{b}}
+\newcommand{\T}{^\top}
+\newcommand{\argmin}{\mathop{\mathrm{argmin}}}
+
 
 
 %% allow for this line if you want the electronic option to work
@@ -124,38 +165,46 @@ dabei der folgende:
 Alternativ kann auch das mitgelieferte Makefile verwendet werden.
 
 
-\section{Rendering}
+\section{Introduction}
 
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-dolore magna aliquyam erat, sed diam
-voluptua~\cite{kitware2003,Max:1995:OMF}. At vero eos et accusam et
-justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-invidunt ut labore et dolore magna aliquyam erat, sed diam
-voluptua. At vero eos et accusam et justo duo dolores et ea
-rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-ipsum dolor sit amet.
+In computer vision, the field of optic flow deals with the estimation of a 2-dimensional flow field based on two consecutive frames of an image sequence.
+\\(mehr dazu warum optic flow geil ist)\\
+Different methods for flow estimation exist, such as ... ... and variational optic flow which is based on the calculus of variations.
+In the following the concept of variational flow estimation is recapitulated and the approach by \verb|\cite{daspaper}| with order adaptive regulalarization is presented.
 
-Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse
-molestie consequat, vel illum dolore eu feugiat nulla facilisis at
-vero eros et accumsan et iusto odio dignissim qui blandit praesent
-luptatum zzril delenit augue duis dolore te feugait nulla
-facilisi~\cite{notes2002}. Lorem ipsum dolor sit amet, consectetuer
-adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
-dolore magna aliquam erat volutpat.
+\section{Variational Optic Flow}
+In this section the general framework for flow estimation using variational methods is recapitulated.
+\\\\
+Given two subsequent images
+$I_0,I_1 ~:~ \Omega \subset \Real^2 \to \Real$ \\
+of an image sequence, we seek the displacement vector field 
+\\$\flow = (u~v)\T ~:~ \Omega \subset \Real^2 \to \Real^2$ 
+that maps 
+$I_0$ onto $I_1$ 
+such that\\
+$I_0(\x) = I_1(\x+\flow(\x))$.
+\\\\
+To estimate the flow function $\flow$ an energy functional is minimized. 
+Typically this functional consists of two terms, a data term $D(\flow)$ and a regularization term $R(\flow)$.
+\begin{align*}
+\flow' &= \argmin_{\flow} E(\flow)
+\\
+E(\flow) &= D(\flow) + \alpha R(\flow)
+\end{align*}
+In this framework, the data term is used to penalize flow functions which violate certain constancy assumptions on image features, such as the brightness constancy assumtion 
+$D_{brght}(\flow) = \int_\Omega (I_0(\x)-I_1(\x+\flow(\x))^2\;d\x$.
+As the data term is insufficient for solving this problem and would yield multiple ambiguous solutions as illustrated in \ref{fig:ambigdataterm}, the regularization term is used to overcome this inconvenience and penalize flow functions that are unlikely.
+This is done by setting up constraints for the flow, such as the first order smoothness assumption
+$R_{smooth}(\flow) = \int_\Omega || \nabla u ||_2^2 + || \nabla v ||_2^2\;d\x$.
+This assumption enforces constant flow due to penalizing non vanishing gradients, which amount to changes in the vector field.
 
-Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper
-suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem
-vel eum iriure dolor in hendrerit in vulputate velit esse molestie
-consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et
-accumsan et iusto odio dignissim qui blandit praesent luptatum zzril
-delenit augue duis dolore te feugait nulla facilisi.
+\begin{figure}[tb]
+  \centering
+  \includegraphics[width=1.5in]{images/ambiguousflow.png}
+  \caption{\label{fig:ambigdataterm} Beispielillustration.}
+\end{figure}
+
+
 
 \section{Exposition}
 
