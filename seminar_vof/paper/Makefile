@@ -38,7 +38,7 @@ DVIPSPAPERSIZE=-t $(PAPERSIZE)
 #PDFLATEXPAPERSIZE=
 
 #----------------------------------------------------------------------------
-LATEX = latex
+LATEX = pdflatex
 BIBTEX = bibtex
 L2H = latex2html
 PDFLATEX = ps2pdf

@@ -236,11 +236,11 @@
 
 \RequirePackage[latin1]{inputenc}
 \RequirePackage[T1]{fontenc}
-\RequirePackage{ngerman}
+%\RequirePackage{ngerman}
 
 
 % ------------ main code --------------
-\newcommand{\semestertext}{Sommersemester 2010}
+\newcommand{\semestertext}{Summer Term 2018}
 \newcommand{\semester}[1]{\renewcommand{\semestertext}{#1}}
 \newcommand{\seminartypetext}{Seminar}
 \newcommand{\seminartype}[1]{\renewcommand{\seminartypetext}{#1}}
@@ -287,7 +287,7 @@ Institut f\"ur Visualisierung und Interaktive Systeme, Universit\"at Stuttgart. 
 \newcommand{\firstsection}[1]{\renewcommand{\firstsectiontxt}{#1}}
 \newcommand{\acknowledgments}[1]{%
 \ifvgtc@review\else%
-\section*{Danksagung}
+\section*{Thanks}
 #1
 \fi}
 
@@ -616,7 +616,7 @@ Institut f\"ur Visualisierung und Interaktive Systeme, Universit\"at Stuttgart. 
        \leftskip = 0.33in \rightskip = \leftskip%
        \ifx\vgtc@abstxt\vgtc@empty \else%
             \begingroup%
-                {\bfseries Kurzbeschreibung}---\vgtc@abstxt%
+                {\bfseries Abstract}---\vgtc@abstxt%
             \endgroup\par%
         \fi%
         \ifx\vgtc@keywords\vgtc@empty \else%

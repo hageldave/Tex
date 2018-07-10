@@ -16,13 +16,16 @@
 \usepackage{mathptmx} 
 \usepackage{graphicx}
 \usepackage{times}
-%\usepackage[utf8]{inputenc}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{bigints}
 \usepackage{xfrac}
 \usepackage{bm}
+\usepackage{cleveref}
+\usepackage{csquotes}
+\usepackage{subcaption}
+\usepackage[english]{babel}
 
 \newcommand{\lam}{\lambda}
 \newcommand{\trans}{\quad\bigg|\;}
@@ -68,10 +71,10 @@
 \author{Roy G. Biv}
 
 %% paper title
-\title{Visualisierung von Regenbogenfarben}
+\title{Order-Adaptive Regularisation for Variational Optic Flow:\\Global, Local and in Between}
 
 %% short title for header
-\shorttitle{Visualisierung von Regenbogenfarben}
+\shorttitle{Order-Adaptive Regularisation}
 
 
 %% Abstract section.
@@ -118,61 +121,12 @@
 
 \maketitle
 
-Die Ausarbeitung darf eine L"ange von 6 Seiten nicht unterschreiten
-und 8 Seiten nicht "uberschreiten. Dies beinhaltet Text, Abbildungen
-und Referenzen. Bei Ausarbeitungen mit mehr als 8 Seiten werden nur
-die ersten 8 Seiten zur Bewertung herangezogen. F"ur die Form der
-Ausarbeitung steht auf der Seminarwebseite diese \LaTeX{}-Vorlage
-bereit. Diese Vorlage ist bindend und darf nicht abge"andert
-werden. Abgaben in anderer Form werden nicht akzeptiert.
-
-\section{Instruktionen}
-
-Bitte nachfolgende Abschnitte sorgf"altig durchlesen.
-
-\subsection{Sprache}
-
-Die Ausarbeitung kann entweder auf Deutsch oder Englisch geschrieben
-werden.
-
-\subsection{Abbildungen und Tabellen}
-
-Alle Abbildungen (siehe Abb.\ \ref{fig:sample}) und Tabellen (Tabelle\
-\ref{tab:vis_accept}) sollten zentriert sein
-(\verb|\centering|). Abbildungen "uber beide Textspalten
-(Abb. \ref{fig:multicolumn}) k"onnen mit
-\verb|\begin{figure*}|\ldots\verb|\end{figure*}| eingef"ugt werden.
-
-\subsection{Referenzen}
-
-Literaturangaben wie beispielsweise Levoy \cite{levoy:1989:DSV} werden
-mit Hilfe von BibTeX erzeugt. Dazu werden die Referenzen in die
-Literaturliste (hier \emph{literatur.bib}) eingetragen und
-entsprechend mit \verb|\cite| referenziert.
-
-\subsection{\LaTeX-"Ubersetzung}
-
-Die \LaTeX-Datei kann mit \emph{latex} oder \emph{pdflatex} "ubersetzt
-werden. Dabei ist zu beachten, dass f"ur die "Ubersetzung mit
-\emph{latex} die Grafiken in Postscript (eps) vorliegen, f"ur
-\emph{pdflatex} entsprechend als jpg, png oder pdf.  Der Ablauf ist
-dabei der folgende:
-\begin{enumerate}
-\item \verb|pdflatex <quelldatei.tex>|
-\item \verb|bibtex <quelldatei>|
-\item \verb|pdflatex <quelldatei.tex>| (evtl. mehrfach)
-\end{enumerate}
-Alternativ kann auch das mitgelieferte Makefile verwendet werden.
-
-
-\section{Introduction}
-
 In computer vision, the field of optic flow deals with the estimation of a 2-dimensional flow field based on two consecutive frames of an image sequence.
 \\(mehr dazu warum optic flow geil ist)\\
 Different methods for flow estimation exist, such as ... ... and variational optic flow which is based on the calculus of variations.
 In the following the concept of variational flow estimation is recapitulated and the approach by \verb|\cite{daspaper}| with order adaptive regulalarization is presented.
 
-\section{Variational Optic Flow}
+\section{Variational Optic Flow}\label{sec:variationalopticflow}
 In this section the general framework for flow estimation using variational methods is recapitulated.
 \\\\
 Given two subsequent images
@@ -186,23 +140,60 @@ $I_0(\x) = I_1(\x+\flow(\x))$.
 \\\\
 To estimate the flow function $\flow$ an energy functional is minimized. 
 Typically this functional consists of two terms, a data term $D(\flow)$ and a regularization term $R(\flow)$.
-\begin{align*}
-\flow' &= \argmin_{\flow} E(\flow)
+\begin{flalign*}
+\flow' &= \argmin_{\flow} E(\flow)&&
 \\
-E(\flow) &= D(\flow) + \alpha R(\flow)
-\end{align*}
-In this framework, the data term is used to penalize flow functions which violate certain constancy assumptions on image features, such as the brightness constancy assumtion 
-$D_{brght}(\flow) = \int_\Omega (I_0(\x)-I_1(\x+\flow(\x))^2\;d\x$.
-As the data term is insufficient for solving this problem and would yield multiple ambiguous solutions as illustrated in \ref{fig:ambigdataterm}, the regularization term is used to overcome this inconvenience and penalize flow functions that are unlikely.
-This is done by setting up constraints for the flow, such as the first order smoothness assumption
-$R_{smooth}(\flow) = \int_\Omega || \nabla u ||_2^2 + || \nabla v ||_2^2\;d\x$.
+E(\flow) &= D(\flow) + \alpha R(\flow)&&
+\end{flalign*}
+In this framework, the data term is used to penalize flow functions which violate certain constancy assumptions on image features, such as the brightness constancy assumtion. 
+\begin{flalign*}
+D_{brght}(\flow) = \int_\Omega (I_0(\x)-I_1(\x+\flow(\x))^2\;d\x&&
+\end{flalign*}
+As the data term is insufficient for solving this problem and would yield multiple ambiguous solutions as illustrated in \cref{fig:ambigdataterm}, the regularization term is used to overcome this inconvenience and penalize flow functions that are unlikely.
+This is done by setting up constraints for the flow, such as the first order smoothness assumption.
+\begin{flalign*}
+R_{smooth}(\flow) = \int_\Omega || \nabla u ||_2^2 + || \nabla v ||_2^2\;d\x&&
+\end{flalign*}
 This assumption enforces constant flow due to penalizing non vanishing gradients, which amount to changes in the vector field.
-
-\begin{figure}[tb]
-  \centering
-  \includegraphics[width=1.5in]{images/ambiguousflow.png}
-  \caption{\label{fig:ambigdataterm} Beispielillustration.}
+\begin{figure}[htb]
+\centering
+\includegraphics[width=\linewidth]{images/ambiguousflow.png}
+\caption{Images show a rectangle that moved from bottom left to top right. The red arrows sketch a flow field explaining where the pixels moved.
+Even though both fields perfectly fulfill a data term with brightness and gradient constancy assumption, only the right field is reasonable and would minimize a first order smoothness regularization.}
+\label{fig:ambigdataterm}
 \end{figure}
+
+In order to minimize the energy functional, an iterative update sheme is developed using the euler lagrange equation \cite{eulerlagrange}.
+
+\section{Motivation}
+As explained in \cref{sec:variationalopticflow} the regularization term can be used to constrain the \enquote{type} of the estimated flow function.
+In practice either first or second order smoothness assumptions are made in which a flow function minimizes the regularization term when its first or second derivative vanishes.
+Therefore, first order methods are suitable for motion that is constant, i.e. parallel to the image plane.
+Second order methods can be leveraged for estimating affine flow fields as the class of linear functions implies vanishing second derivative.
+\Cref{fig:flowfields} shows a constant and linear flow field for comparison.
+\begin{figure}[htb]
+\centering
+\begin{subfigure}{0.45\linewidth}
+\centering
+\includegraphics[width=\linewidth]{images/constantflow.eps}
+\end{subfigure}
+\begin{subfigure}{0.45\linewidth}
+\centering
+\includegraphics[width=\linewidth]{images/linearflow.eps}
+\end{subfigure}
+\caption{
+Graphs show vector fields of different behaviour, left is constant with $f(x,y) = (1\;\, 1)\T$, right is linear with $f(x,y) = (x \;\, y)\T$.
+Constant flow is typical for motion parallel to the image plane, linear flow for motion perpenicular to the image plane. 
+}
+\label{fig:flowfields}
+\end{figure}
+Depending on the situation in the image sequence, a constant flow field may be more reasonable than a linear one.
+Imagine for example a sequence captured from the view point of a car driver who waits at a crossing while other cars pass the crossing from left to right in front of him.
+The optic flow in this situation would be constant as all cars move in the same direction parallel to the image plane.
+Now imagine the car driver moving forwards as the crosisng is now free, the whole scene around him will appear to move towards him.
+The optic flow is now linear as the surroundings move perpendicular to the image plane.
+However, the flow behaviour is not exclusive, both constant and linear flow can be present in the same sequence, for example when another car heading in the same direction switches lanes.
+
 
 
 
