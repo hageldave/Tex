@@ -59,6 +59,8 @@
 \newcommand{\baux}{\vec{b}}
 \newcommand{\T}{^\top}
 \newcommand{\argmin}{\mathop{\mathrm{argmin}}}
+\newcommand{\charbonnier}{\Psi_{\text{Ch}}}
+\newcommand{\peronamalik}{\Psi_{\text{PM}}}
 
 
 
@@ -187,14 +189,36 @@ Constant flow is typical for motion parallel to the image plane, linear flow for
 }
 \label{fig:flowfields}
 \end{figure}
+
 Depending on the situation in the image sequence, a constant flow field may be more reasonable than a linear one.
 Imagine for example a sequence captured from the view point of a car driver who waits at a crossing while other cars pass the crossing from left to right in front of him.
 The optic flow in this situation would be constant as all cars move in the same direction parallel to the image plane.
 Now imagine the car driver moving forwards as the crosisng is now free, the whole scene around him will appear to move towards him.
 The optic flow is now linear as the surroundings move perpendicular to the image plane.
 However, the flow behaviour is not exclusive, both constant and linear flow can be present in the same sequence, for example when another car heading in the same direction switches lanes.
+To account for such situations, a variational model has to make more sophisticated assumptions than simple first or second order smoothness.
 
+Fortunately, the presented approach manages to combine first and second order regularisation and even adaptively choose optimal order for a given sequence.
+Moreover it provides different adaption shemes to enable a global, local, non-local and region based selection of regularisation.
 
+\section{Order Adaptive Variational Model}
+In this section the variational model by \verb|\citeauthor{daspaper}| introduced in \cite{daspaper} will be discussed in detail.
+
+Lets start with the data term which uses a combination of brightness and gradient constancy assumption.
+\begin{flalign*}
+D(\flow) &= \int_\Omega \charbonnier(p_{\text{brght}}(\flow)) + \gamma*\charbonnier(p_{\text{grad}}(\flow))\;d\x &&
+\\
+p_{\text{brght}}(\flow) &= (\;I_1(\x+\flow(\x))-I_0(\x)\;)^2 &&
+\\
+p_{\text{grad}}(\flow) &= ||\;\nabla I_1(\x+\flow(\x))-\nabla I_0(\x)\;||_2^2 &&
+\end{flalign*}
+In this setup, $\gamma$ is used to weight the terms against each other.
+As can be seen $p_{\text{brght}}$ and $p_{\text{grad}}$ are quadratic penalizers, which are sensitive to outliers.
+To remove the strong influence of outliers on the minimization, the subquadratic charbonnier penalizer $\charbonnier$ is used to 
+robustify the constancy assumptions.
+\begin{flalign*}
+\charbonnier(s^2) &= 2\epsilon^2\sqrt{1+s^2/\epsilon^2} &&
+\end{flalign*}
 
 
 \section{Exposition}
