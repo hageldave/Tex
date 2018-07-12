@@ -59,8 +59,8 @@
 \newcommand{\baux}{\vec{b}}
 \newcommand{\T}{^\top}
 \newcommand{\argmin}{\mathop{\mathrm{argmin}}}
-\newcommand{\charbonnier}{\Psi_{\text{Ch}}}
-\newcommand{\peronamalik}{\Psi_{\text{PM}}}
+\newcommand{\charbonnier}{\psi_{\text{Ch}}}
+\newcommand{\peronamalik}{\psi_{\text{PM}}}
 
 
 
@@ -202,9 +202,10 @@ Fortunately, the presented approach manages to combine first and second order re
 Moreover it provides different adaption shemes to enable a global, local, non-local and region based selection of regularisation.
 
 \section{Order Adaptive Variational Model}
-In this section the variational model by \verb|\citeauthor{daspaper}| introduced in \cite{daspaper} will be discussed in detail.
+In this section the variational model by Maurer, Stoll and Bruhn introduced in their work \cite{daspaper} will be discussed in detail.
 
-Lets start with the data term which uses a combination of brightness and gradient constancy assumption.
+\subsection{Dataterm}
+The employed data term in the variational model uses a combination of brightness and gradient constancy assumption.
 \begin{flalign*}
 D(\flow) &= \int_\Omega \charbonnier(p_{\text{brght}}(\flow)) + \gamma*\charbonnier(p_{\text{grad}}(\flow))\;d\x &&
 \\
@@ -212,13 +213,21 @@ p_{\text{brght}}(\flow) &= (\;I_1(\x+\flow(\x))-I_0(\x)\;)^2 &&
 \\
 p_{\text{grad}}(\flow) &= ||\;\nabla I_1(\x+\flow(\x))-\nabla I_0(\x)\;||_2^2 &&
 \end{flalign*}
-In this setup, $\gamma$ is used to weight the terms against each other.
-As can be seen $p_{\text{brght}}$ and $p_{\text{grad}}$ are quadratic penalizers, which are sensitive to outliers.
-To remove the strong influence of outliers on the minimization, the subquadratic charbonnier penalizer $\charbonnier$ is used to 
-robustify the constancy assumptions.
+In this setup, $p_{\text{brght}}$ is the penalizer for the brightness constancy assumption and $p_{\text{grad}}$ is the penalizer for the gradient constancy assumption which can be understood as a check for
+edges being mapped correctly.
+The parameter $\gamma$ is used to weight the terms against each other.
+As can be seen $p_{\text{brght}}$ and $p_{\text{grad}}$ are quadratic penalizers, and are thus sensitive to outliers.
+To remove the strong influence of outliers on the minimization, the subquadratic charbonnier penalizer \cite{charbonnier} $\charbonnier$ is used to 
+robustify both constancy assumptions.
 \begin{flalign*}
 \charbonnier(s^2) &= 2\epsilon^2\sqrt{1+s^2/\epsilon^2} &&
 \end{flalign*}
+Note that the charbonnier penalizer is a function of a squared argument.
+When plotting the function with respect to $s$ instead of $s^2$ its behaviour becomes clearer, as shown in \cref{fig:penalizers}.
+For values close to zero, the function penalizes quadratically and approaches linear behaviour in the limit $s\to\pm\infty$, resulting in outliers being less fatal.
+
+\subsection{Regulalarisation}
+Hello
 
 
 \section{Exposition}

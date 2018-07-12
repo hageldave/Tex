@@ -1,77 +1,29 @@
-@manual{kitware2003,
-  title = {The Visualization Toolkit User's Guide},
-  organization = {Kitware, Inc.},
-  year = {2003},
-  month = {January}
+% Encoding: UTF-8
+
+@InProceedings{daspaper,
+  author    = {Maurer, Daniel and Stoll, Michael and Bruhn, Andr{\'e}s},
+  title     = {Order-Adaptive Regularisation for Variational Optical Flow: Global, Local and in Between},
+  booktitle = {Scale Space and Variational Methods in Computer Vision},
+  year      = {2017},
+  editor    = {Lauze, Fran{\c{c}}ois and Dong, Yiqiu and Dahl, Anders Bjorholm},
+  pages     = {550--562},
+  address   = {Cham},
+  publisher = {Springer International Publishing},
+  abstract  = {Recent approaches for variational motion estimation typically either rely on first or second order regularisation strategies. While first order strategies are more appropriate for scenes with fronto-parallel motion, second order constraints are superior if it comes to the estimation of affine flow fields. Since using the wrong regularisation order may lead to a significant deterioration of the results, it is surprising that there has not been much effort in the literature so far to determine this order automatically. In our work, we address the aforementioned problem in two ways. (i) First, we discuss two anisotropic smoothness terms of first and second order, respectively, that share important structural properties and that are thus particularly suited for being combined within an order-adaptive variational framework. (ii) Secondly, based on these two smoothness terms, we develop four different variational methods and with it four different strategies for adaptively selecting the regularisation order: a global and a local strategy based on half-quadratic regularisation, a non-local approach that relies on neighbourhood information, and a region based method using level sets. Experiments on recent benchmarks show the benefits of each of the strategies. Moreover, they demonstrate that adaptively combining different regularisation orders not only allows to outperform single-order strategies but also to obtain advantages beyond the ones of a frame-wise selection.},
+  isbn      = {978-3-319-58771-4},
 }
 
-@misc{notes2002,
-  author = {Georges Grinstein and Daniel Keim and Matthew Ward},
-  title = {Information Visualization, Visual Data Mining, and Its Application to Drug Design},
-  howpublished = {IEEE Visualization 2002 Course \#1 Notes},
-  month = {October},
-  year = {2002}
-}
+@ARTICLE{charbonnier,
+author={P. Charbonnier and L. Blanc-Feraud and G. Aubert and M. Barlaud},
+journal={IEEE Transactions on Image Processing},
+title={Deterministic edge-preserving regularization in computed imaging},
+year={1997},
+volume={6},
+number={2},
+pages={298-311},
+keywords={computerised tomography;edge detection;image reconstruction;medical image processing;minimisation;single photon emission computed tomography;ARTUR;alternate minimizations;auxiliary variable;computed imaging;deterministic edge-preserving regularization;discontinuities;half-quadratic criterion;image processing problems;optimization;reconstruction algorithm;tomography;Computer applications;Image processing;Image reconstruction;Markov random fields;Minimization methods;Nonlinear equations;Reconstruction algorithms;Smoothing methods;Tomography;Transforms},
+doi={10.1109/83.551699},
+ISSN={1057-7149},
+month={Feb},}
 
-@article{Max:1995:OMF,
-  author = "Nelson Max",
-  title = "Optical models for direct volume rendering",
-  year = "1995",
-  month = jun,
-  journal = "IEEE Transactions on Visualization and Computer
-    Graphics",
-  volume = "1",
-  number = "2",
-  pages = "99--108",
-}
-
-@book{ware:2004:IVP,
-  author = "Colin Ware",
-  title = "Information Visualization: Perception for Design",
-  edition = "second",
-  year = 2004,
-  publisher = "Morgan Kaufmann Publishers",
-}
-
-@mastersthesis{kindlmann:1999:SAG,
-  author = "Gordon Kindlmann",
-  title = "Semi-Automatic Generation of Transfer Functions for Direct Volume Rendering",
-  school = "Cornell University",
-  year = 1999,
-}
-
-@phdthesis{levoy:1989:DSV,
-  author = "Marc Levoy",
-  title = "Display of Surfaces from Volume Data",
-  school = "University of North Carolina at Chapel Hill",
-  year = 1989,
-}
-
-@inproceedings{Lorensen:1987:MCA,
-  author = "William E. Lorensen and Harvey E. Cline",
-  title = "Marching Cubes: A High Resolution 3D Surface Construction Algorithm",
-  year = "1987",
-  month = jul,
-  booktitle = "Computer Graphics (Proceedings of SIGGRAPH 87)",
-  volume = 21,
-  pages = "163--169",
-}
-
-@inproceedings{Nielson:1991:TAD,
-  author = "Gregory M. Nielson and Bernd Hamann",
-  title = "The Asymptotic Decider: Removing the Ambiguity in Marching Cubes",
-  year = "1991",
-  booktitle = "Visualization '91",
-  pages = "83--91",
-}
-
-@ARTICLE{strengert2006spectral,
-  author = {Magnus Strengert and Thomas Klein and Ralf Botchen and Simon Stegmaier
-	and Min Chen and Thomas Ertl},
-  title = {Spectral volume rendering using {GPU-based} raycasting},
-  journal = {The Visual Computer},
-  year = {2006},
-  volume = {22},
-  pages = {550--561},
-  number = {8},
-}
+@Comment{jabref-meta: databaseType:bibtex;}
