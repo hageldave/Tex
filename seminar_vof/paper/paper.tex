@@ -175,11 +175,11 @@ Second order methods can be leveraged for estimating affine flow fields as the c
 \Cref{fig:flowfields} shows a constant and linear flow field for comparison.
 \begin{figure}[htb]
 \centering
-\begin{subfigure}{0.45\linewidth}
+\begin{subfigure}{0.49\linewidth}
 \centering
 \includegraphics[width=\linewidth]{images/constantflow.eps}
 \end{subfigure}
-\begin{subfigure}{0.45\linewidth}
+\begin{subfigure}{0.49\linewidth}
 \centering
 \includegraphics[width=\linewidth]{images/linearflow.eps}
 \end{subfigure}
@@ -219,15 +219,34 @@ The parameter $\gamma$ is used to weight the terms against each other.
 As can be seen $p_{\text{brght}}$ and $p_{\text{grad}}$ are quadratic penalizers, and are thus sensitive to outliers.
 To remove the strong influence of outliers on the minimization, the subquadratic charbonnier penalizer \cite{charbonnier} $\charbonnier$ is used to 
 robustify both constancy assumptions.
-\begin{flalign*}
+\begin{flalign}\label{eq:charbonnier}
 \charbonnier(s^2) &= 2\epsilon^2\sqrt{1+s^2/\epsilon^2} &&
-\end{flalign*}
-Note that the charbonnier penalizer is a function of a squared argument.
+\end{flalign}
+Note that the charbonnier penalizer is a function of a squared argument so that an arbitrary quadratically penalized assumption can be plugged in.
 When plotting the function with respect to $s$ instead of $s^2$ its behaviour becomes clearer, as shown in \cref{fig:penalizers}.
 For values close to zero, the function penalizes quadratically and approaches linear behaviour in the limit $s\to\pm\infty$, resulting in outliers being less fatal.
 
 \subsection{Regulalarisation}
 Hello
+
+
+\begin{figure}[htb]
+\centering
+\begin{subfigure}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{images/charbonnier.eps}
+\end{subfigure}
+\begin{subfigure}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{images/peronamalik.eps}
+\end{subfigure}
+\caption{
+Graphs show penalizer functions and their asymptotic equivalents as dashed lines.\\
+Left is charbonnier \cref{eq:charbonnier} with $\epsilon=1$ and asymptotic equivalents $\lim_{s\to 0}\charbonnier(s^2)=s^2+2$ and $\lim_{s\to\infty}\charbonnier(s^2)=2s$.\\
+Right is Perona Malik \cref{eq:peronamalik} with $\epsilon=1$ and asymptotic equivalents $\lim_{s\to 0}\peronamalik(s^2)=s^2$ and $\lim_{s\to\infty}\peronamalik(s^2)=2\ln(s)$.
+}
+\label{fig:penalizers}
+\end{figure}
 
 
 \section{Exposition}
