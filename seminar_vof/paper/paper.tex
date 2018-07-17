@@ -61,6 +61,8 @@
 \newcommand{\argmin}{\mathop{\mathrm{argmin}}}
 \newcommand{\charbonnier}{\psi_{\text{Ch}}}
 \newcommand{\peronamalik}{\psi_{\text{PM}}}
+\newcommand{\Rfirst}{R_{1\text{st}}}
+\newcommand{\Rsecond}{R_{2\text{nd}}}
 
 
 
@@ -167,7 +169,7 @@ Even though both fields perfectly fulfill a data term with brightness and gradie
 
 In order to minimize the energy functional, an iterative update sheme is developed using the euler lagrange equation \cite{eulerlagrange}.
 
-\section{Motivation}
+\section{Motivation}\label{sec:motivation}
 As explained in \cref{sec:variationalopticflow} the regularization term can be used to constrain the \enquote{type} of the estimated flow function.
 In practice either first or second order smoothness assumptions are made in which a flow function minimizes the regularization term when its first or second derivative vanishes.
 Therefore, first order methods are suitable for motion that is constant, i.e. parallel to the image plane.
@@ -206,13 +208,14 @@ In this section the variational model by Maurer, Stoll and Bruhn introduced in t
 
 \subsection{Dataterm}
 The employed data term in the variational model uses a combination of brightness and gradient constancy assumption.
-\begin{flalign*}
+\begin{flalign}
+\label{eq:dataterm}
 D(\flow) &= \int_\Omega \charbonnier(p_{\text{brght}}(\flow)) + \gamma*\charbonnier(p_{\text{grad}}(\flow))\;d\x &&
-\\
+\\\label{eq:brightnessconstancy}
 p_{\text{brght}}(\flow) &= (\;I_1(\x+\flow(\x))-I_0(\x)\;)^2 &&
-\\
+\\\label{eq:gradientconstancy}
 p_{\text{grad}}(\flow) &= ||\;\nabla I_1(\x+\flow(\x))-\nabla I_0(\x)\;||_2^2 &&
-\end{flalign*}
+\end{flalign}
 In this setup, $p_{\text{brght}}$ is the penalizer for the brightness constancy assumption and $p_{\text{grad}}$ is the penalizer for the gradient constancy assumption which can be understood as a check for
 edges being mapped correctly.
 The parameter $\gamma$ is used to weight the terms against each other.
@@ -227,7 +230,14 @@ When plotting the function with respect to $s$ instead of $s^2$ its behaviour be
 For values close to zero, the function penalizes quadratically and approaches linear behaviour in the limit $s\to\pm\infty$, resulting in outliers being less fatal.
 
 \subsection{Regulalarisation}
-Hello
+As said in \cref{sec:motivation} the variational model is able to adaptively choose regularization order. 
+Therfore the regularisation term is a combination of a first and a second order part.
+Lets first have a look at the first oreder regularizer $\Rfirst$. 
+\begin{flalign}
+\Rfirst(\flow) &= \int_\Omega S_1(\flow)\;d\x&&
+\\
+S_1(\flow) = \sum_{l=1}^2
+\end{flalign}  
 
 
 \begin{figure}[htb]
