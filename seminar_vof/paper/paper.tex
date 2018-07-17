@@ -206,7 +206,7 @@ Moreover it provides different adaption shemes to enable a global, local, non-lo
 \section{Order Adaptive Variational Model}
 In this section the variational model by Maurer, Stoll and Bruhn introduced in their work \cite{daspaper} will be discussed in detail.
 
-\subsection{Dataterm}
+\subsection{Dataterm}\label{sec:dataterm}
 The employed data term in the variational model uses a combination of brightness and gradient constancy assumption.
 \begin{flalign}
 \label{eq:dataterm}
@@ -235,11 +235,28 @@ Therfore the regularisation term is a combination of a first and a second order 
 Lets first have a look at the first oreder regularizer $\Rfirst$. 
 \begin{flalign}
 \Rfirst(\flow) &= \int_\Omega S_1(\flow)\;d\x&&
-\\
-S_1(\flow) = \sum_{l=1}^2
-\end{flalign}  
+\\\label{eq:S1}
+S_1(\flow) &= \peronamalik\Big((\ev_1\T\nabla u)^2+(\ev_1\T\nabla v)^2\Big)
++ \charbonnier\Big((\ev_2\T\nabla u)^2+(\ev_2\T\nabla v)^2\Big)&&
+\end{flalign} 
+This is the anisotropic complementary regulariser by Zimmer~et~al.~\cite{opticflowinharmony} which makes use of the eigenvectors of the regularisation tensor \cite{opticflowinharmony}.
+The regularization tensor is a generalization of the structure tensor \cite{maxanisotropy} for arbitrary image features.
+In short, it summarizes gradient information within a neighborhood of a pixel.
+The eigenvector $\ev_1$ points in the direction of steepest change (i.e. over an edge) while $\ev_2$ is orthogonal to $\ev_1$ (i.e. points along an edge).
 
-
+Lets postpone the discussion of the regularization tensor for a second and get some intuition on the way $S_1$ works.
+As can be seen from \cref{eq:S1}, the term uses two penalizer functions, the Charbonnier penalizer which was introduced in \cref{sec:dataterm} in \cref{eq:charbonnier} and the Perona~Malik penalizer $\peronamalik$.
+\begin{flalign}\label{eq:peronamalik}
+\peronamalik(s^2) &= \epsilon^2\ln(1+s^2/\epsilon^2)&&
+\end{flalign}
+As arguments to the penalizer functions, projections of the flow gradients onto the eigenvectors are used.
+These projections are minimal if the flow gradient vanishes as in standard first order smoothness terms.
+Special about this term are the different penalizations of projections on the first and second eigenvector respectively.
+The graphs of the two penalizer functions are shown in \cref{fig:penalizers}, where it can be seen that values close
+to zero are penalized quadratically, values further away are penalized subquadratically in both functions.
+In the limit however, the Perona-Malik penalizer takes on smaller values than the charbonnier penalizer.
+This has the effect of flow changes in direction of the first eigenvector to be less costly than in direction of the second eigenvector.
+From the perspective of image features and the regularization tensor this is like getting a \enquote{discount} on flow change over an edge.
 \begin{figure}[htb]
 \centering
 \begin{subfigure}{0.49\linewidth}
@@ -257,6 +274,11 @@ Right is Perona Malik \cref{eq:peronamalik} with $\epsilon=1$ and asymptotic equ
 }
 \label{fig:penalizers}
 \end{figure}
+
+To continue the discussion of the regularization tensor, lets state its definition first.
+\begin{flalign}
+S_\Phi(\x) = \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
+\end{flalign}
 
 
 \section{Exposition}
