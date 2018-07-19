@@ -203,8 +203,11 @@ To account for such situations, a variational model has to make more sophisticat
 Fortunately, the presented approach manages to combine first and second order regularisation and even adaptively choose optimal order for a given sequence.
 Moreover it provides different adaption shemes to enable a global, local, non-local and region based selection of regularisation.
 
-\section{Order Adaptive Variational Model}
+\section{Variational Model}
 In this section the variational model by Maurer, Stoll and Bruhn introduced in their work \cite{daspaper} will be discussed in detail.
+As said in \cref{sec:motivation} the variational model is able to adaptively choose regularization order. 
+Therfore the regularisation term is a combination of a first and a second order part.
+First the models data term is discussed followed by the first and second order part of the regularization and their underlying concepts.
 
 \subsection{Dataterm}\label{sec:dataterm}
 The employed data term in the variational model uses a combination of brightness and gradient constancy assumption.
@@ -229,17 +232,15 @@ Note that the charbonnier penalizer is a function of a squared argument so that 
 When plotting the function with respect to $s$ instead of $s^2$ its behaviour becomes clearer, as shown in \cref{fig:penalizers}.
 For values close to zero, the function penalizes quadratically and approaches linear behaviour in the limit $s\to\pm\infty$, resulting in outliers being less fatal.
 
-\subsection{Regulalarisation}
-As said in \cref{sec:motivation} the variational model is able to adaptively choose regularization order. 
-Therfore the regularisation term is a combination of a first and a second order part.
-Lets first have a look at the first oreder regularizer $\Rfirst$. 
+\subsection{First Order Regularizer}
+The first order term of the regularization is the anisotropic complementary regulariser by Zimmer~et~al.~\cite{opticflowinharmony}.
 \begin{flalign}
 \Rfirst(\flow) &= \int_\Omega S_1(\flow)\;d\x&&
 \\\label{eq:S1}
 S_1(\flow) &= \peronamalik\Big((\ev_1\T\nabla u)^2+(\ev_1\T\nabla v)^2\Big)
 + \charbonnier\Big((\ev_2\T\nabla u)^2+(\ev_2\T\nabla v)^2\Big)&&
 \end{flalign} 
-This is the anisotropic complementary regulariser by Zimmer~et~al.~\cite{opticflowinharmony} which makes use of the eigenvectors of the regularisation tensor \cite{opticflowinharmony}.
+This term makes use of the eigenvectors of the regularisation tensor \cite{opticflowinharmony}.
 The regularization tensor is a generalization of the structure tensor \cite{maxanisotropy} for arbitrary image features.
 In short, it summarizes gradient information within a neighborhood of a pixel.
 The eigenvector $\ev_1$ points in the direction of steepest change (i.e. over an edge) while $\ev_2$ is orthogonal to $\ev_1$ (i.e. points along an edge).
@@ -276,8 +277,28 @@ Right is Perona Malik \cref{eq:peronamalik} with $\epsilon=1$ and asymptotic equ
 \end{figure}
 
 To continue the discussion of the regularization tensor, lets state its definition first.
+\begin{flalign}\label{eq:structuretensor}
+S_\Phi(\x) &= \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
+&&\\\label{eq:eigendecomp}
+S_\Phi &= Q \Lambda Q\T = \mat{\ev_1&\ev_2}\mat{\lam_1&0\\0&\lam_2}\mat{\ev_1\T\\ \ev_2\T}&&
+\end{flalign}
+The tensor is a convolution of a weighting function $\omega$ with a matrix.
+The matrix is the outer product of the gradient of the selected image feature $\Phi$ which is calculated as $\nabla\Phi(\x)\nabla\Phi(\x)\T$.
+For the structure tensor the image feature would be brightness $\Phi=I$, but as this is the generalization, $\Phi$ can be something else like .
+Using the Eigen value decomposition, the orthonormal eigenvectors $\ev_1$ and $\ev_2$ are obtained which summarize the gradient distribution in the neighborhood defined by the weighting function $\omega$.
+If the weighting function was a Dirac delta $\omega = \delta$ the Eigen decomposition of the tensor would yield the normalized gradient as first eigenvector.
+\begin{flalign*}
+&\int \delta(\tau) \nabla\Phi(\x-\tau)\nabla\Phi(\x-\tau)\T \;d\tau = \nabla\Phi(\x)\nabla\Phi(\x)\T&&
+\\
+&\nabla\Phi\nabla\Phi\T = \lambda_1*\ev_1\ev_1\T = \mat{\ev_1&\ev_2}\mat{\lambda_1&0\\0&0}\mat{\ev_1\T\\ \ev_2\T}&&
+\end{flalign*}
+Here the first eigenvalue is the squared length of the gradient $\lambda_1=|\nabla\Phi|^2$.
+Of course this discussion only holds for Dirac delta as weighting function, for others like Gaussian, the eigenvectors cannot be factored in this way.
+
+\subsection{Second Order Regularizer}
+The second order term uses ...
 \begin{flalign}
-S_\Phi(\x) = \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
+\Rsecond(\flow) = \inf_{\aaux,\baux}[]
 \end{flalign}
 
 
