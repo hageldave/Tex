@@ -27,6 +27,8 @@
 \usepackage{subcaption}
 \usepackage[english]{babel}
 
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+
 \newcommand{\lam}{\lambda}
 \newcommand{\trans}{\quad\bigg|\;}
 \newcommand{\Trans}{\quad\Bigg|\;}
@@ -63,6 +65,7 @@
 \newcommand{\peronamalik}{\psi_{\text{PM}}}
 \newcommand{\Rfirst}{R_{1\text{st}}}
 \newcommand{\Rsecond}{R_{2\text{nd}}}
+\newcommand{\jacob}{\mathcal{J}}
 
 
 
@@ -167,7 +170,7 @@ Even though both fields perfectly fulfill a data term with brightness and gradie
 \label{fig:ambigdataterm}
 \end{figure}
 
-In order to minimize the energy functional, an iterative update sheme is developed using the euler lagrange equation \cite{eulerlagrange}.
+In order to minimize the energy functional, an iterative update sheme is developed using the Euler-Lagrange equation \cite{mathforphysicists}.
 
 \section{Motivation}\label{sec:motivation}
 As explained in \cref{sec:variationalopticflow} the regularization term can be used to constrain the \enquote{type} of the estimated flow function.
@@ -278,19 +281,17 @@ Right is Perona Malik \cref{eq:peronamalik} with $\epsilon=1$ and asymptotic equ
 
 To continue the discussion of the regularization tensor, lets state its definition first.
 \begin{flalign}\label{eq:structuretensor}
-\mathcal{S}_\Phi(\x) &= \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
+\mathcal{S}_{\Phi,\omega}(\x) &= \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
 &&\\\label{eq:eigendecomp}
-\mathcal{S}_\Phi &= Q \Lambda Q\T = \mat{\ev_1&\ev_2}\mat{\lam_1&0\\0&\lam_2}\mat{\ev_1\T\\ \ev_2\T}&&
+\mathcal{S}_{\Phi,\omega}&= Q \Lambda Q\T = \mat{\ev_1&\ev_2}\mat{\lam_1&0\\0&\lam_2}\mat{\ev_1\T\\ \ev_2\T}&&
 \end{flalign}
 The tensor is a convolution of a weighting function $\omega$ with a matrix.
 The matrix is the outer product of the gradient of the selected image feature $\Phi$ which is calculated as $\nabla\Phi(\x)\nabla\Phi(\x)\T$.
 For the structure tensor the image feature would be brightness $\Phi=I$, but as this is the generalization, $\Phi$ can be something else like the saturation value in HSV color space or luminance of CIE L*a*b*.
-Using the eigendecomposition, the orthonormal eigenvectors $\ev_1$ and $\ev_2$ are obtained which summarize the gradient distribution in the neighborhood defined by the weighting function $\omega$.
+Using the eigendecomposition (\cref{eq:eigendecomp}), the orthonormal eigenvectors $\ev_1$ and $\ev_2$ are obtained which summarize the gradient distribution in the neighborhood defined by the weighting function $\omega$.
 If the weighting function was a Dirac delta $\omega = \delta$ the eigendecomposition of the tensor would yield the normalized gradient as first eigenvector.
 \begin{flalign*}
-&\int \delta(\tau) \nabla\Phi(\x-\tau)\nabla\Phi(\x-\tau)\T \;d\tau = \nabla\Phi(\x)\nabla\Phi(\x)\T&&
-\\
-&\nabla\Phi\nabla\Phi\T = \lambda_1*\ev_1\ev_1\T = \mat{\ev_1&\ev_2}\mat{\lambda_1&0\\0&0}\mat{\ev_1\T\\ \ev_2\T}&&
+\mathcal{S}_{\Phi,\delta}= \nabla\Phi\nabla\Phi\T = \lambda_1*\ev_1\ev_1\T = \mat{\ev_1&\ev_2}\mat{\lambda_1&0\\0&0}\mat{\ev_1\T\\ \ev_2\T}&&
 \end{flalign*}
 Here the first eigenvalue is the squared length of the gradient $\lambda_1=|\nabla\Phi|^2$.
 Of course this discussion only holds for Dirac delta as weighting function, for others like Gaussian, the eigenvectors cannot be factored in this way.
@@ -303,9 +304,11 @@ The second order term uses ...
 S_2(\flow,\aaux,\baux) =\;& \peronamalik\Big( (\ev_1\T(\nabla u-\aaux))^2 + (\ev_1\T(\nabla v-\baux))^2 \Big)
 &&\\
 +\;&\charbonnier\Big( (\ev_2\T(\nabla u-\aaux))^2 + (\ev_2\T(\nabla v-\baux))^2 \Big)
+\nonumber&&\\
+S_\text{aux}(\aaux,\baux) =\;& \peronamalik\Big(\sum\nolimits_{k=1}^2\;(\ev_k\T \jacob_{\aaux}\;\ev_1)^2 + (\ev_k\T \jacob_{\baux}\;\ev_1)^2  \Big)
 &&\\
-S_\text{aux}(\aaux,\baux) =\;&
-&&
++\;&\charbonnier\Big(\sum\nolimits_{k=1}^2\;(\ev_k\T \jacob_{\aaux}\;\ev_2)^2 + (\ev_k\T \jacob_{\baux}\;\ev_2)^2  \Big)
+\nonumber&&
 \end{flalign}
 
 
