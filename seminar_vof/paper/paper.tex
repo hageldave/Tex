@@ -278,15 +278,15 @@ Right is Perona Malik \cref{eq:peronamalik} with $\epsilon=1$ and asymptotic equ
 
 To continue the discussion of the regularization tensor, lets state its definition first.
 \begin{flalign}\label{eq:structuretensor}
-S_\Phi(\x) &= \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
+\mathcal{S}_\Phi(\x) &= \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
 &&\\\label{eq:eigendecomp}
-S_\Phi &= Q \Lambda Q\T = \mat{\ev_1&\ev_2}\mat{\lam_1&0\\0&\lam_2}\mat{\ev_1\T\\ \ev_2\T}&&
+\mathcal{S}_\Phi &= Q \Lambda Q\T = \mat{\ev_1&\ev_2}\mat{\lam_1&0\\0&\lam_2}\mat{\ev_1\T\\ \ev_2\T}&&
 \end{flalign}
 The tensor is a convolution of a weighting function $\omega$ with a matrix.
 The matrix is the outer product of the gradient of the selected image feature $\Phi$ which is calculated as $\nabla\Phi(\x)\nabla\Phi(\x)\T$.
-For the structure tensor the image feature would be brightness $\Phi=I$, but as this is the generalization, $\Phi$ can be something else like .
-Using the Eigen value decomposition, the orthonormal eigenvectors $\ev_1$ and $\ev_2$ are obtained which summarize the gradient distribution in the neighborhood defined by the weighting function $\omega$.
-If the weighting function was a Dirac delta $\omega = \delta$ the Eigen decomposition of the tensor would yield the normalized gradient as first eigenvector.
+For the structure tensor the image feature would be brightness $\Phi=I$, but as this is the generalization, $\Phi$ can be something else like the saturation value in HSV color space or luminance of CIE L*a*b*.
+Using the eigendecomposition, the orthonormal eigenvectors $\ev_1$ and $\ev_2$ are obtained which summarize the gradient distribution in the neighborhood defined by the weighting function $\omega$.
+If the weighting function was a Dirac delta $\omega = \delta$ the eigendecomposition of the tensor would yield the normalized gradient as first eigenvector.
 \begin{flalign*}
 &\int \delta(\tau) \nabla\Phi(\x-\tau)\nabla\Phi(\x-\tau)\T \;d\tau = \nabla\Phi(\x)\nabla\Phi(\x)\T&&
 \\
@@ -298,7 +298,14 @@ Of course this discussion only holds for Dirac delta as weighting function, for 
 \subsection{Second Order Regularizer}
 The second order term uses ...
 \begin{flalign}
-\Rsecond(\flow) = \inf_{\aaux,\baux}[]
+\Rsecond(\flow) =\;&\int_\Omega\; \inf_{\aaux,\baux}\big[\;S_2(\flow,\aaux,\baux) +\beta*S_\text{aux}(\aaux,\baux)\;\big] \;d\x
+&&\\
+S_2(\flow,\aaux,\baux) =\;& \peronamalik\Big( (\ev_1\T(\nabla u-\aaux))^2 + (\ev_1\T(\nabla v-\baux))^2 \Big)
+&&\\
++\;&\charbonnier\Big( (\ev_2\T(\nabla u-\aaux))^2 + (\ev_2\T(\nabla v-\baux))^2 \Big)
+&&\\
+S_\text{aux}(\aaux,\baux) =\;&
+&&
 \end{flalign}
 
 
