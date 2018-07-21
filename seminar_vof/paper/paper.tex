@@ -131,19 +131,17 @@
 In computer vision, the field of optic flow deals with the estimation of a 2-dimensional flow field based on two consecutive frames of an image sequence.
 \\(mehr dazu warum optic flow geil ist)\\
 Different methods for flow estimation exist, such as ... ... and variational optic flow which is based on the calculus of variations.
-In the following the concept of variational flow estimation is recapitulated and the approach by \verb|\cite{daspaper}| with order adaptive regulalarization is presented.
+In the following the concept of variational flow estimation is recapitulated and the approach by Maurer, Stoll and Bruhn \cite{daspaper} with order adaptive regulalarization is presented.
 
 \section{Variational Optic Flow}\label{sec:variationalopticflow}
 In this section the general framework for flow estimation using variational methods is recapitulated.
 \\\\
-Given two subsequent images
-$I_0,I_1 ~:~ \Omega \subset \Real^2 \to \Real$ \\
-of an image sequence, we seek the displacement vector field 
-\\$\flow = (u~v)\T ~:~ \Omega \subset \Real^2 \to \Real^2$ 
-that maps 
-$I_0$ onto $I_1$ 
-such that\\
-$I_0(\x) = I_1(\x+\flow(\x))$.
+Given two subsequent images of an image sequence\\
+$I_0,I_1 ~:~ \Omega \subset \Real^2 \to \Real$,\\
+we seek the displacement vector field 
+\\$\flow = (u~v)\T ~:~ \Omega \subset \Real^2 \to \Real^2$\\
+that maps $I_0$ onto $I_1$ such that
+\\$I_0(\x) = I_1(\x+\flow(\x))$.
 \\\\
 To estimate the flow function $\flow$ an energy functional is minimized. 
 Typically this functional consists of two terms, a data term $D(\flow)$ and a regularization term $R(\flow)$.
@@ -190,7 +188,7 @@ Second order methods can be leveraged for estimating affine flow fields as the c
 \end{subfigure}
 \caption{
 Graphs show vector fields of different behaviour, left is constant with $f(x,y) = (1\;\, 1)\T$, right is linear with $f(x,y) = (x \;\, y)\T$.
-Constant flow is typical for motion parallel to the image plane, linear flow for motion perpenicular to the image plane. 
+Constant flow is typical for motion parallel to the image plane, linear flow for motion orthogonal to the image plane. 
 }
 \label{fig:flowfields}
 \end{figure}
@@ -281,13 +279,14 @@ Right is Perona Malik \cref{eq:peronamalik} with $\epsilon=1$ and asymptotic equ
 
 To continue the discussion of the regularization tensor, lets state its definition first.
 \begin{flalign}\label{eq:structuretensor}
-\mathcal{S}_{\Phi,\omega}(\x) &= \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 && \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) && \Phi_y(\x-\tau)^2} \;d\tau
+\mathcal{S}_{\Phi,\omega}(\x) &= \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 & \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) & \Phi_y(\x-\tau)^2} \;d\tau
 &&\\\label{eq:eigendecomp}
 \mathcal{S}_{\Phi,\omega}&= Q \Lambda Q\T = \mat{\ev_1&\ev_2}\mat{\lam_1&0\\0&\lam_2}\mat{\ev_1\T\\ \ev_2\T}&&
 \end{flalign}
 The tensor is a convolution of a weighting function $\omega$ with a matrix.
 The matrix is the outer product of the gradient of the selected image feature $\Phi$ which is calculated as $\nabla\Phi(\x)\nabla\Phi(\x)\T$.
 For the structure tensor the image feature would be brightness $\Phi=I$, but as this is the generalization, $\Phi$ can be something else like the saturation value in HSV color space or luminance of CIE L*a*b*.
+Typically, the feature is chosen to be consistent with the feature used in the data term, which would be a combination of brightness and gradient norm.
 Using the eigendecomposition (\cref{eq:eigendecomp}), the orthonormal eigenvectors $\ev_1$ and $\ev_2$ are obtained which summarize the gradient distribution in the neighborhood defined by the weighting function $\omega$.
 If the weighting function was a Dirac delta $\omega = \delta$ the eigendecomposition of the tensor would yield the normalized gradient as first eigenvector.
 \begin{flalign*}
@@ -320,7 +319,12 @@ The coupling term therefore becomes minimal if the gradients are euqal to the au
 Again, the prejection on the first eigenvector is penalized less due to the behavior of the perona malik penalizer, but is not intuitive in the form written above.
 If instead we reformulate the projection as $(\ev_1\T(\nabla u-\aaux))^2 = (\ev_1\T\nabla u-\ev_1\T\aaux)^2$ it becomes clear that the flow gradient and the auxiliary function are allowed to differ as long as they are roughly tangent to the first eigenvector.
 
-Due to the coupling term connecting the first derivative of the flow to the auxiliary functions, the 
+In the auxiliary term $S_\text{aux}$ the Jacobians of the auxiliary functions $\jacob_{\aaux}$ and $\jacob_{\baux}$ are anisotropically penalized similar to the first order penalization of the flow gradients.
+Obviously, the auxiliary term is minimal if the derivatives of the auxiliary functions vanish, allowing for constant auxiliary functions with changes at edges which are indicated by the regularization tensor.
+Due to the connection of the auxiliary functions to the flow gradients in the coupling term, the flow is indirectly constrained to be linear.
+This is because the nullspace of the second order term are functions with derivatives equal to the auxiliary functions which are constrained to be constant.
+
+
 
 \section{Exposition}
 
