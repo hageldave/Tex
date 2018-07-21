@@ -259,7 +259,7 @@ Special about this term are the different penalizations of projections on the fi
 The graphs of the two penalizer functions are shown in \cref{fig:penalizers}, where it can be seen that values close
 to zero are penalized quadratically, values further away are penalized subquadratically in both functions.
 In the limit however, the Perona-Malik penalizer takes on smaller values than the charbonnier penalizer.
-This has the effect of flow changes in direction of the first eigenvector to be less costly than in direction of the second eigenvector.
+This has the effect of flow changes tangent to the first eigenvector to be less costly than tangent to the second eigenvector.
 From the perspective of image features and the regularization tensor this is like getting a \enquote{discount} on flow change over an edge.
 \begin{figure}[htb]
 \centering
@@ -297,7 +297,9 @@ Here the first eigenvalue is the squared length of the gradient $\lambda_1=|\nab
 Of course this discussion only holds for Dirac delta as weighting function, for others like Gaussian, the eigenvectors cannot be factored in this way.
 
 \subsection{Second Order Regularizer}
-The second order term uses ...
+The second order regularizer makes use of two auxiliary functions $\aaux(\x)$ and $\baux(\x)$ which are connected
+to the flow $\flow$ using a coupling term $S_2$. 
+These auxiliary functions are as well unknown and are controlled by an auxiliary smoothness term $S_\text{aux}$.
 \begin{flalign}
 \Rsecond(\flow) =\;&\int_\Omega\; \inf_{\aaux,\baux}\big[\;S_2(\flow,\aaux,\baux) +\beta*S_\text{aux}(\aaux,\baux)\;\big] \;d\x
 &&\\
@@ -310,7 +312,15 @@ S_\text{aux}(\aaux,\baux) =\;& \peronamalik\Big(\sum\nolimits_{k=1}^2\;(\ev_k\T 
 +\;&\charbonnier\Big(\sum\nolimits_{k=1}^2\;(\ev_k\T \jacob_{\aaux}\;\ev_2)^2 + (\ev_k\T \jacob_{\baux}\;\ev_2)^2  \Big)
 \nonumber&&
 \end{flalign}
+This regularization term can be interpreted as the integral over the infimal convolution of $S_2$ and $S_\text{aux}$ with respect to the vector fields $\aaux$ and $\baux$.
 
+The coupling term $S_2$ is similar to the first order term $S_1$ in that it uses the two penalizer functions $\peronamalik$ and $\charbonnier$ to penalize non zero projections with respect to the eigenvectors of the structure tensor (\cref{eq:structuretensor}).
+This time however, not the flow gradients themselves are projected, but the differece of the gradients to the auxiliary functions.
+The coupling term therefore becomes minimal if the gradients are euqal to the auxiliary functions instead of equal to zero as in the first order term.
+Again, the prejection on the first eigenvector is penalized less due to the behavior of the perona malik penalizer, but is not intuitive in the form written above.
+If instead we reformulate the projection as $(\ev_1\T(\nabla u-\aaux))^2 = (\ev_1\T\nabla u-\ev_1\T\aaux)^2$ it becomes clear that the flow gradient and the auxiliary function are allowed to differ as long as they are roughly tangent to the first eigenvector.
+
+Due to the coupling term connecting the first derivative of the flow to the auxiliary functions, the 
 
 \section{Exposition}
 
