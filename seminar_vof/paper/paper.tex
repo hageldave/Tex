@@ -345,7 +345,7 @@ $S_1$ and $S_2$ on the other hand are the energies with respect to the flow and 
 The goal thus, is to embed some information into the the weighting parameter $c$ such that it equals to $1$ when first order regularization has less energy than second order regularization and equals to $0$ in the contrary case.
 However, since the class of linear functions which can be modelled using second order regularization includes constant functions, it is only desirable to use second order regularization when it yields a significant benefit over first order.
 To model this behavour of $c$ a sigmoid function of the benefit $\Delta$ of first over second order regularization is used.
-\begin{flalign}
+\begin{flalign}\label{eq:c}
 c = \frac{1}{1+e^{-\Delta/\lambda}} \quad\text{with}\quad\Delta=T+\frac{1}{|\Omega|}\int_\Omega S_2 - S_1 \; d\x &&
 \end{flalign}
 Here $\lambda$ is used to control the slope of the sigmoid function, and $T$ is the threshold by which the second order regularizer has to be better than first order, so that second order will be used.
@@ -353,11 +353,33 @@ Here $\lambda$ is used to control the slope of the sigmoid function, and $T$ is 
 To get to this behavior of $c$ from the euler lagrange equation's point of view, the corresponding selection term $\phi_\lambda(c)$ has to be found.
 By examining the regularizers partial derivative $\frac{\partial R}{\partial c} = 0$ we get to the following equation.
 \begin{flalign}
-&\frac{\partial R}{\partial c} = \int_\Omega S_1(\flow) - S_2(\flow,\aaux,\baux) + \phi_\lambda'(c) \;d\x = 0
+\frac{\partial R(\flow,c)}{\partial c} &= \int_\Omega S_1(\flow) - S_2(\flow,\aaux,\baux) + \phi_\lambda'(c) \;d\x \;=\; 0
 &&\nonumber\\
-&-|\Omega|*\phi_\lambda'(c) = \int_\Omega S_1(\flow) - S_2(\flow,\aaux,\baux)
+-\phi_\lambda'(c) &= \frac{1}{|\Omega|}\int_\Omega S_1(\flow) - S_2(\flow,\aaux,\baux) \;d\x
+&&\nonumber\\
+\label{eq:deriv_r_to_c}
+\phi_\lambda'(c) &= \frac{1}{|\Omega|}\int_\Omega S_2(\flow,\aaux,\baux) - S_1(\flow) \;d\x
 &&
 \end{flalign}
+The right hand side of \cref{eq:deriv_r_to_c} also occurs in \cref{eq:c} which can be reformulated as follows in order to be plugged in.
+\begin{flalign}
+&\frac{1}{|\Omega|}\int_\Omega S_2 - S_1\;d\x = \Delta-T
+%&&\nonumber\\
+\quad\text{with}\quad
+\Delta = -\lambda*\ln(\frac{1}{c}-1)
+&&\nonumber\\\label{eq:phi'}
+&\phi_\lambda'(c) = -\lambda*\ln\Big(\frac{1}{c}-1\Big) - T
+\end{flalign}
+To obtain $\phi_\lambda$ we integrate both sides of \cref{eq:phi'} and get the following selection term with integration constant $C$.
+\begin{flalign}
+\phi_\lambda(c) = \lambda \Bigg( \ln(1-c)-c*\ln\Big(\frac{1}{c}-1\Big) \Bigg) -Tc + C &&
+\end{flalign}
+When chosing $C=T$ we can get a more intuitive formulation of the regularizer, using a cleverly tailored replacement $\phi$ for $\phi_\lambda$.
+\begin{flalign}
+\phi(c) &= \frac{\phi_\lambda(c) + T*(c-1)}{\lambda} = \ln(1-c)-c*\ln\Big(\frac{1}{c}-1\Big)
+&&\\
+R(\flow,c) = R
+\end{flalign} 
 
 
 
