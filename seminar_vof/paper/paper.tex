@@ -75,10 +75,10 @@
 
 
 %% author name
-\author{Roy G. Biv}
+\author{David H\"agele}
 
 %% paper title
-\title{Order-Adaptive Regularisation for Variational Optic Flow:\\Global, Local and in Between}
+\title{An Elaboration on\\Order-Adaptive Regularisation for Variational Optical Flow:\\Global, Local and in Between}
 
 %% short title for header
 \shorttitle{Order-Adaptive Regularisation}
@@ -277,6 +277,7 @@ Right is Perona Malik \cref{eq:peronamalik} with $\epsilon=1$ and asymptotic equ
 \label{fig:penalizers}
 \end{figure}
 
+\subsubsection{Regularization Tensor}
 To continue the discussion of the regularization tensor, lets state its definition first.
 \begin{flalign}\label{eq:structuretensor}
 \mathcal{S}_{\Phi,\omega}(\x) &= \bigintsss \omega(\tau)\Mat{\Phi_x(\x-\tau)^2 & \Phi_x(\x-\tau)\Phi_y(\x-\tau)\\\Phi_x(\x-\tau)\Phi_y(\x-\tau) & \Phi_y(\x-\tau)^2} \;d\tau
@@ -327,7 +328,8 @@ This is because the nullspace of the second order term are functions with deriva
 \section{Order Adaption}
 In \cref{sec:variationalmodel}, the data and regularization terms were discussed and it was explained that the first order regularizer enforces constant flow whereas the second order regularizer allows for linear flow.
 As illustrated in \cref{fig:flowfields} constant vector fields are suitable for modelling motion parallel to the image plane, motion orthogonal to the image plane can be modelled using a linear flow field.
-So what is needed to apply the most suitable regularizer depending on the current sequence, is an adaptive scheme which will be explained in the following.
+So what is needed to apply the most suitable regularizer depending on the current sequence, is an adaptive scheme.
+In the following four different schemes will be discussed, where the global scheme will be used to introduce the underlying concept of the schemes.
 
 \subsection{Global Scheme}
 The global adaptive scheme will be choosing order once for the whole image domain.
@@ -344,7 +346,7 @@ It may be counter intuitive to only include $S_1$ and $S_2$ in the convex combin
 $S_1$ and $S_2$ on the other hand are the energies with respect to the flow and are comparable to each other as they only differ in the projected quantity, which was already discussed in \cref{subsec:secondorderreg}.
 The goal thus, is to embed some information into the the weighting parameter $c$ such that it equals to $1$ when first order regularization has less energy than second order regularization and equals to $0$ in the contrary case.
 However, since the class of linear functions which can be modelled using second order regularization includes constant functions, it is only desirable to use second order regularization when it yields a significant benefit over first order.
-To model this behavour of $c$ a sigmoid function of the benefit $\Delta$ of first over second order regularization is used.
+To model this behavour of $c$ a sigmoid function of the benefit $\Delta$ of first over second order regularization is used as illustrated in \cref{fig:c_phi}.
 \begin{flalign}\label{eq:c}
 c = \frac{1}{1+e^{-\Delta/\lambda}} \quad\text{with}\quad\Delta=T+\frac{1}{|\Omega|}\int_\Omega S_2 - S_1 \; d\x &&
 \end{flalign}
@@ -353,12 +355,12 @@ Here $\lambda$ is used to control the slope of the sigmoid function, and $T$ is 
 To get to this behavior of $c$ from the euler lagrange equation's point of view, the corresponding selection term $\phi_\lambda(c)$ has to be found.
 By examining the regularizers partial derivative $\frac{\partial R}{\partial c} = 0$ we get to the following equation.
 \begin{flalign}
-\frac{\partial R(\flow,c)}{\partial c} &= \int_\Omega S_1(\flow) - S_2(\flow,\aaux,\baux) + \phi_\lambda'(c) \;d\x \;=\; 0
+\frac{\partial R(\flow,c)}{\partial c} = &\int_\Omega S_1(\flow) - S_2(\flow,\aaux,\baux) + \phi_\lambda'(c) \;d\x \;=\; 0
 &&\nonumber\\
--\phi_\lambda'(c) &= \frac{1}{|\Omega|}\int_\Omega S_1(\flow) - S_2(\flow,\aaux,\baux) \;d\x
+-\phi_\lambda'(c)*|\Omega| = &\int_\Omega S_1(\flow) - S_2(\flow,\aaux,\baux) \;d\x
 &&\nonumber\\
 \label{eq:deriv_r_to_c}
-\phi_\lambda'(c) &= \frac{1}{|\Omega|}\int_\Omega S_2(\flow,\aaux,\baux) - S_1(\flow) \;d\x
+\phi_\lambda'(c) = \frac{1}{|\Omega|}&\int_\Omega S_2(\flow,\aaux,\baux) - S_1(\flow) \;d\x
 &&
 \end{flalign}
 The right hand side of \cref{eq:deriv_r_to_c} also occurs in \cref{eq:c} which can be reformulated as follows in order to be plugged in.
@@ -375,11 +377,56 @@ To obtain $\phi_\lambda$ we integrate both sides of \cref{eq:phi'} and get the f
 \phi_\lambda(c) = \lambda \Bigg( \ln(1-c)-c*\ln\Big(\frac{1}{c}-1\Big) \Bigg) -Tc + C &&
 \end{flalign}
 When chosing $C=T$ we can get a more intuitive formulation of the regularizer, using a cleverly tailored replacement $\phi$ for $\phi_\lambda$.
-\begin{flalign}
-\phi(c) &= \frac{\phi_\lambda(c) + T*(c-1)}{\lambda} = \ln(1-c)-c*\ln\Big(\frac{1}{c}-1\Big)
+\begin{flalign}\label{eq:phi}
+\phi(c) = \frac{\phi_\lambda(c) + T*(c-1)}{\lambda} &= \ln(1-c)-c*\ln\Big(\frac{1}{c}-1\Big)
 &&\\
-R(\flow,c) = R
+%= \ln(1-c)-c*\ln\Big(\frac{1-c}{c}\Big) 
+& = c*\ln(c) + (1-c)*\ln(1-c)
+%-c ln(1/c -1 ) = -c ln((1-c)/c) = -c ln(1-c) + c ln(c)
+&&\nonumber\\
+R(\flow,c) = \int_\Omega \inf_{\aaux,\baux}\big[\; c*S_1(\flow) 
+& + (1-c)*\big(S_2(\flow,\aaux,\baux) +T\big)
+&&\\
+& + \beta*S_\text{aux}(\aaux,\baux)
++ \lambda*\phi(c)\;\big] \;d\x \nonumber&&
 \end{flalign} 
+In this representation the threshold parameter $T$ appears in the convex combination together with $S_2$ and can be interpreted as an extra cost to be paid in order to use second order regularization.
+The sigmoid slope parameter $\lambda$ now works as a weight for the selection term $\phi$ which has become independent of $\lambda$.
+In fact the selection term has simplified quite a bit and it can be seen that it is a symmetric function which is also illustarted in \cref{fig:c_phi}.
+From the figure it can also be seen that $\phi$ is minimal for $c=\frac{1}{2}$ which can be interpreted as a prior on $c$ for when the model is indecisive on regularization order.
+So by definition of $\phi$ neither of the regularizers is preferred, but due to the threshold $T$ the descision is biased towards the first order regularization.
+
+\begin{figure}[htb]
+\centering
+\begin{subfigure}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{images/cofdelta.eps}
+\end{subfigure}
+\begin{subfigure}{0.49\linewidth}
+\centering
+\includegraphics[width=\linewidth]{images/selectionterm.eps}
+\end{subfigure}
+\caption{
+The left graph shows the weighting parameter $c$ (\cref{eq:c}) with respect to $\Delta$, where $\Delta$ is the benefit of first over second order regularization biased by the threshold $T$.
+The solid line corresponds to $\lambda=0.2$, the dotted line to $\lambda=0.8$.
+\\
+The right graph shows the selection term $\phi(c)$ (\cref{eq:phi}) which is axially symmetric to $c=\frac{1}{2}$.
+}
+\label{fig:c_phi}
+\end{figure}
+
+\subsection{Local Scheme}
+The previously introduced global scheme chooses regularization for the whole image domain, however, different parts of the scene may move differently so that it makes sense to
+allow for different regularization depending on the location.
+So instead of using a global weighting parameter $c$, it is replaced by a weighting function $c_{\text{local}}(\x)$.
+\begin{flalign}
+c_{\text{local}}(\x) = \frac{1}{1+e^{-\Delta(\x)/\lambda}} \quad\text{with}\quad\Delta(\x)=T + S_2 - S_1&&
+\end{flalign}
+As a consequence $\Delta$ is now a spacially varying function as well, mapping to the benefit of first order regularization in a single pixel at $\x$, which allows the model to decide on order on a per pixel basis.
+
+\subsection{Non-Local Scheme}
+Since the local scheme allows for different regularization order per pixel based on a decision which only takes that pixels location into account, regularization order may fluctuate a lot in this model.
+
 
 
 
