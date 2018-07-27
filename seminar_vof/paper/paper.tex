@@ -66,6 +66,9 @@
 \newcommand{\Rfirst}{R_{1\text{st}}}
 \newcommand{\Rsecond}{R_{2\text{nd}}}
 \newcommand{\jacob}{\mathcal{J}}
+\newcommand{\patch}{\mathcal{N}}
+\newcommand{\cnl}{c_{\text{nl}}}
+\newcommand{\cNl}{\overset{\_}{c}_{\text{nl}}}
 
 
 
@@ -426,9 +429,41 @@ As a consequence $\Delta$ is now a spacially varying function as well, mapping t
 
 \subsection{Non-Local Scheme}
 Since the local scheme allows for different regularization order per pixel based on a decision which only takes that pixels location into account, regularization order may fluctuate a lot in this model.
+To make the descision more consistent with the pixels neighorhood, the weighting function $c_{\text{local}}(\x)$ is altered to
+take a rectangular shaped patch of pixels around it into account.
+\begin{flalign}
+\cNl(\x) = \frac{1}{|\patch(\x)|}\int_{\patch(\x)}\cnl(\y)\;d\y 
+&&\\
+R_\text{nl}(\flow,\cnl) = \int_\Omega \inf_{\aaux,\baux}\big[\; \cNl*S_1(\flow) 
+& + (1-\cNl)*\big(S_2(\flow,\aaux,\baux) +T\big)
+&&\\
+& + \beta*S_\text{aux}(\aaux,\baux)
++ \lambda*\phi(\cnl)\;\big] \;d\x \nonumber&&
+\end{flalign}
+Here $\mathcal{N}(\x)$ denotes the patch of $\x$ and $|\mathcal{N}(\x)|$ the patch size which is used for normalization.
+To find $\cnl$, $R_\text{nl}(\flow,\cnl)$ is minimized with respect to it.
+\begin{flalign}
+\frac{\partial R(\flow,\cnl)}{\partial \cnl} = \cdots
+&&\\
+\text{derivation of~} \cnl \dots
+&&\\
+\cnl = \cdots
+&&
+\end{flalign}
 
-
-
+\subsection{Region-Based Scheme}
+The non-local scheme takes a neighborhood around a pixel into account for the descision on regularization order.
+To push it yet a little further, the region based scheme decides on order leveraging a level set function $z(\x):\Omega\to\mathbb{R}$ which devides the image space into first and second order regularized regions.
+The corresponding regularizer reads as follows.
+\begin{flalign}
+&R(\flow,z) = \int_\Omega c_\text{rgn}(z)*S_1 + (1-c_\text{rgn}(z))*(S_2 + T) + \theta*|\nabla c_\text{rgn}(z)| \;d\x
+&&\\
+&c_\text{rgn}(z) = \frac{1}{1+e^{z/\lambda}}
+&&
+\end{flalign}
+Here $c_\text{rgn}$ is as well a sigmoid function, but choosen to approximate the heaviside funtion ($\lambda\to 0$) in order to obtain hard boundaries for the regions defined by $z$.
+The selection term from the previous schemes has been replaced by a smoothness term on $c_\text{rgn}$ which penalizes level set functions with lots of sign changes.
+Due to this penalization short paths for $z(\x)=0$ are favored resulting in smooth region boundaries.
 
 \section{Exposition}
 
