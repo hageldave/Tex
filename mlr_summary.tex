@@ -1,0 +1,138 @@
+% !TeX spellcheck = en_GB
+\documentclass[12pt]{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{xfrac}
+\usepackage{esvect}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{.36cm plus0.09cm minus0.09cm}
+\usepackage[left=2.25cm, right=2.25cm, top=2.25cm, bottom=2.25cm]{geometry}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{esvect}
+\usepackage{csquotes}
+
+\newcommand{\lam}{\lambda}
+\newcommand{\trans}{\quad\bigg|\;}
+\newcommand{\Trans}{\quad\Bigg|\;}
+% matrix shortcut
+\newcommand{\mat}[1]{\begin{pmatrix} #1 \end{pmatrix}}
+% matrix shortcut with increased vertical spacing
+\newcommand{\Mat}[1]{\begingroup
+\renewcommand*{\arraystretch}{1.5}
+\mat{#1}
+\endgroup}
+% matrix format but without braces (secretly a matrix)
+\newcommand{\secretMat}[2][r]{\begin{matrix*}[#1] #2 \end{matrix*}}
+% matrix format but without braces (secretly a matrix) with increased vertical spacing
+\newcommand{\SecretMat}[2][r]{\begingroup
+\renewcommand*{\arraystretch}{1.7}
+\secretMat[#1]{#2}
+\endgroup}
+% shortcuts for df/dx stuff in derivative
+\newcommand{\der}{\partial}
+\newcommand{\deriv}[2]{\frac{\der #1}{\der #2}}
+\newcommand{\eqns}[1]{\begin{flalign} #1 \end{flalign}}
+\newcommand{\eqnsnn}[1]{\begin{flalign*} #1 \end{flalign*}}
+\newcommand{\argmin}{\mathop{\mathrm{argmin}}}
+\newcommand{\dom}[1]{\mathbb{#1}}
+\newcommand{\T}{^\top}
+\newcommand{\equivalent}{\Leftrightarrow}
+% make star '*' become \cdot (normal multiplication sign)
+\mathcode`\*="8000
+{\catcode`\*\active\gdef*{\cdot}}
+
+\begin{document}
+  \begin{center}
+    \Large\textbf{Summary - Machine Learning}\\
+    \vspace{0.25cm}
+    \large{David H\"agele}, \normalsize{\today}
+   \end{center}
+   
+
+\section{Machine Learning Briefly}
+The goal of machine learning is to estimate or \enquote{learn} a mapping $f$ from one domain $\dom{X}$ to another $\dom{Y}$ by using a set of data points.
+\eqnsnn{
+f : \dom{X} \to \dom{Y} &&
+}
+In the field of supervised learning a data set $D$ usually contains observed data points of domain $\dom{X}$ and corresponding points of domain $\dom{Y}$. 
+The objective is to find a mapping $f_\text{optimal}$ that minimizes an error $err$ between observed and estimated $y$.
+\eqnsnn{&
+D = \{ x_i , y_i \}\quad|\quad x_i\in\dom{X},~ y_i \in \dom{Y},~ i\in\dom{N}
+&&\\&
+err : \dom{Y}\times\dom{Y} \to \dom{R}
+&&\\&
+f_\text{optimal} = \argmin_f\;err(y,f(y))
+&&}
+In the field of unsupervised learning there are no corresponding observed points of domain $\dom{Y}$.
+Optimality is not measured using an error to the observation, instead other objectives are to be fulfilled.
+
+\section{Linear Regression}
+One of the most basic algorithms for estimating a real valued function is linear regression.
+Given a set of multivariate inputs $x_i \in \dom{R}^m$ and corresponding real valued outputs $y_i \in \dom{R}$ the following \enquote{loss} $L$ is to be minimized by a linear function $f_\beta:\dom{R}^m\to\dom{R}$.
+\eqns{&
+L(\beta) = \sum_{i=1}^n (\;y_i - f_\beta(x_i)\;)^2 
+&&\\&
+f_\beta(x) = x\T\beta \quad\text{with}\quad\beta\in\dom{R}^m
+&&}
+Lets call the matrix of transposed $x_i$'s $X$ and the vector of $y_i$'s $Y$.
+This allows for rewriting the loss as follows.
+\eqnsnn{&
+L(\beta) = (Y-X\beta)\T(Y-X\beta)
+&&\\&
+X = \mat{x_1\T\\\vdots\\x_n\T} \quad Y = \mat{y_1\\\vdots\\y_n}
+&&}
+When minimizing we seek the roots of the derivative of the loss, by doing so we can derive the optimal solution for beta.
+\eqnsnn{
+\deriv{L(\beta)}{\beta} = 0 ~&\equivalent~ (Y-X\beta)\T X + (Y-X\beta)\T X = 2*(Y-X\beta)\T X = 0
+&&\\&
+\equivalent (Y-X\beta)\T X = X\T Y - X\T X\beta = 0
+&&\\&
+\equivalent X\T Y = X\T X\beta
+&&\\&
+\equivalent (X\T X)^{-1}X\T Y = \beta
+&&
+}
+\subsection{Non-Linear Features}
+Sadly the very easy linear regression algorithm only allows for linear functions to be estimated. 
+Fortunately we can make things non-linear by defining a feature function which maps an input $x$ to feature space like so:
+\eqnsnn{
+\phi(x) \in \dom{R}^l \quad\text{with}\quad l\in\dom{N}
+&&}
+For real valued $x\in\dom{R}$ we can create the quadratic feature vector using the following.
+\eqnsnn{
+\phi(x) = \mat{1&x&x^2}\T
+&&}
+When using linear regression on these features we end up with a function that is quadratic in $x$ but linear in features $\phi(x)$.
+\eqnsnn{&
+X = \mat{\phi(x_1)\T\\\vdots\\\phi(x_n)\T}
+&&\\&
+f_\beta(x) = \phi(x)\T\beta = \phi(x)_1*\beta_1 + \phi(x)_2*\beta_2 + \phi(x)_3*\beta_3 = \beta_1 + x\beta_2 + x^2\beta_3
+&&
+}
+
+\subsection{Regularization}
+Maybe you may have noticed that the linear regression algorithm may fail in case that $(X\T X)$ is not invertible.
+To ensure invertibility a tiny quantity can be added to the diagonal of the matrix $(X\T X + \lambda I)$.
+Interestingly, the optimal solution to the following loss has this exact form.
+\eqnsnn{&
+L(\beta) = (Y-X\beta)\T(Y-X\beta) + \lambda*\beta\T\beta
+&&\\&
+\deriv{L(\beta)}{\beta} = 0 \equivalent 2(Y-X\beta)X\T + 2\lambda*\beta\T = 0
+\equivalent (Y-X\beta)X\T + \lambda*\beta\T = 0
+&&} 
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
