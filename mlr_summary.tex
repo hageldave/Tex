@@ -14,6 +14,7 @@
 \usepackage{hyperref}
 \usepackage{esvect}
 \usepackage{csquotes}
+\usepackage{algpseudocode}
 
 \newcommand{\lam}{\lambda}
 \newcommand{\trans}{\quad\bigg|\;}
@@ -78,26 +79,27 @@ L(\beta) = \sum_{i=1}^n (\;y_i - f_\beta(x_i)\;)^2
 &&\\&
 f_\beta(x) = x\T\beta \quad\text{with}\quad\beta\in\dom{R}^m
 &&}
-Lets call the matrix of transposed $x_i$'s $X$ and the vector of $y_i$'s $Y$.
+This is the mean squared error and we want to minimize it using a linear function.
+Lets call the matrix of transposed $x_i$'s $X$ and the vector of $y_i$'s $y$.
 This allows for rewriting the loss as follows.
 \eqnsnn{&
-L(\beta) = (Y-X\beta)\T(Y-X\beta)
+L(\beta) = (y-X\beta)\T(y-X\beta)
 &&\\&
-X = \mat{x_1\T\\\vdots\\x_n\T} \quad Y = \mat{y_1\\\vdots\\y_n}
+X = \mat{x_1\T\\\vdots\\x_n\T} \quad y = \mat{y_1\\\vdots\\y_n}
 &&}
 When minimizing we seek the roots of the derivative of the loss, by doing so we can derive the optimal solution for beta.
 \eqnsnn{
-\deriv{L(\beta)}{\beta} = 0 ~&\equivalent~ (Y-X\beta)\T X + (Y-X\beta)\T X = 2*(Y-X\beta)\T X = 0
+\deriv{L(\beta)}{\beta} = 0 ~&\equivalent~ (y-X\beta)\T X + (y-X\beta)\T X = 2*(y-X\beta)\T X = 0
 &&\\&
-\equivalent (Y-X\beta)\T X = X\T Y - X\T X\beta = 0
+\equivalent (y-X\beta)\T X = X\T y - X\T X\beta = 0
 &&\\&
-\equivalent X\T Y = X\T X\beta
+\equivalent X\T y = X\T X\beta
 &&\\&
-\equivalent (X\T X)^{-1}X\T Y = \beta
+\equivalent (X\T X)^{-1}X\T y = \beta
 &&
 }
 \subsection{Non-Linear Features}
-Sadly the very easy linear regression algorithm only allows for linear functions to be estimated. 
+Sadly the very simple linear regression algorithm only allows for linear functions to be estimated. 
 Fortunately we can make things non-linear by defining a feature function which maps an input $x$ to feature space like so:
 \eqnsnn{
 \phi(x) \in \dom{R}^l \quad\text{with}\quad l\in\dom{N}
@@ -113,17 +115,58 @@ X = \mat{\phi(x_1)\T\\\vdots\\\phi(x_n)\T}
 f_\beta(x) = \phi(x)\T\beta = \phi(x)_1*\beta_1 + \phi(x)_2*\beta_2 + \phi(x)_3*\beta_3 = \beta_1 + x\beta_2 + x^2\beta_3
 &&
 }
+Even more sophisticated features could be using gaussian functions at the datapoints which then amounts to a radial basis function.
+\eqnsnn{&
+\phi(x) = \mat{1 & \phi_1(x) & \cdots & \phi_N(x)}\T \quad\text{with}\quad \phi_i(x) = e^{-\frac{1}{2}||x_i-x||_2^2}
+&&}
 
 \subsection{Regularization}
 Maybe you may have noticed that the linear regression algorithm may fail in case that $(X\T X)$ is not invertible.
-To ensure invertibility a tiny quantity can be added to the diagonal of the matrix $(X\T X + \lambda I)$.
+To ensure invertibility a tiny quantity can be added to or subtracted from the diagonal of the matrix like so: $(X\T X - \lambda I)$.
 Interestingly, the optimal solution to the following loss has this exact form.
-\eqnsnn{&
-L(\beta) = (Y-X\beta)\T(Y-X\beta) + \lambda*\beta\T\beta
-&&\\&
-\deriv{L(\beta)}{\beta} = 0 \equivalent 2(Y-X\beta)X\T + 2\lambda*\beta\T = 0
-\equivalent (Y-X\beta)X\T + \lambda*\beta\T = 0
+\eqnsnn{
+L(\beta) = (y&-X\beta)\T(y-X\beta) + \lambda*\beta\T\beta
+&&\\
+\deriv{L(\beta)}{\beta} = 0 &\equivalent 2(y-X\beta)\T X + 2\lambda*\beta\T = 0
+\equivalent (y-X\beta)\T X + \lambda*\beta\T = 0
+&&\\
+&\equivalent X\T y - X\T X\beta + \lambda*\beta = 0 
+\equivalent X\T y = X\T X\beta - \lambda*\beta = (X\T X - \lambda I) \beta
+&&\\
+&\equivalent (X\T X - \lambda I)^{-1}X\T y = \beta
 &&} 
+The loss function can be viewed as a combination of penalties for $\beta$.
+The first penalty is the mean squared error from before which is large when $\beta$ cannot reproduce the samples $y$ well.
+The second penalty is for $\beta$ of long lenghts, which means that short $\beta$ with small coefficients are preferred.
+These two penalties probably are contradictive and the optimal beta will be somewhere in between the individual minima for the penalties.
+This kind of regularization using $\lambda\beta\T\beta$ is called $L^2$ regularization and is a special case of the general Tikhonov regularization formulating constraints on $\beta$ as $\beta\T\Gamma\T\Gamma\beta$ with Tikhonov matrix $\Gamma$.
+$\Gamma\beta$ is a linear mapping which can be chosen to also formulate special constraints on beta like differences between coefficients, or projections to different vector spaces.
+
+When we use only half of the data set for \enquote{training} our model i.e. solving for $\beta$ we can check how well it reproduces the other half of the data set, which indicates how well the model generalizes.
+While the model may be very accurate for the data used for training, it may be inaccurate for the data used for \enquote{validation} (the other half), which means that the model is \enquote{over fitted} to the training data and does not approximate the actually underlying function well.
+In our case we can use regularization to allow the model to have a less perfect fit to the data when it instead fulfills the other objective of being small.
+The degree to which the model can violate the mean squared error depends on $\lambda$.
+
+\subsection{Cross Validation}
+In order to find the perfect regularization parameter $\lambda$ in order for our model to generalize well we need to try some out.
+This can be done using cross validation.
+In cross validation, we divide our data set into $K$ euqually sized parts (randomly), then we train our model using K-1 parts of the data and validate the model by computing the mean suared error using the missing part.
+This is done k times so that each part has been used for validation once and the errors are averaged.
+The following pseudo code should make the algorithm clear.
+\begin{algorithmic}[1]
+\State Split data $D$ into $K$ equally sized parts $\{D_1,\dots,D_K\}$ randomly
+\For{$k=1\dots K$}
+\State train on data $D_{\backslash D_k}$ yielding $\beta_i$
+\State calculate MSE using $D_k$ ~ $err_k = L^{MSE}(\beta_k,D_k)$
+\EndFor
+\State calculate total MSE as $err=\frac{1}{K}\sum_{k=1}^K \frac{err_k}{|D_k|}$ 
+\end{algorithmic}
+The total error will be a measure for generalization of the model, using this measure an optimal $\lambda$ can be found by trying different $\lambda$ and adaptively tightening the search space.
+For the start it may be useful to try lambdas of different orders of magnitude first.
+
+
+
+
 
 
 
