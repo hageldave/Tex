@@ -39,9 +39,12 @@
 \newcommand{\eqns}[1]{\begin{flalign} #1 \end{flalign}}
 \newcommand{\eqnsnn}[1]{\begin{flalign*} #1 \end{flalign*}}
 \newcommand{\argmin}{\mathop{\mathrm{argmin}}}
+\newcommand{\argmax}{\mathop{\mathrm{argmax}}}
 \newcommand{\dom}[1]{\mathbb{#1}}
 \newcommand{\T}{^\top}
 \newcommand{\equivalent}{\Leftrightarrow}
+\newcommand{\mathtext}[1]{\quad\text{#1}\quad}
+\newcommand{\with}{\mathtext{with}}
 % make star '*' become \cdot (normal multiplication sign)
 \mathcode`\*="8000
 {\catcode`\*\active\gdef*{\cdot}}
@@ -77,7 +80,7 @@ Given a set of multivariate inputs $x_i \in \dom{R}^m$ and corresponding real va
 \eqns{&
 L(\beta) = \sum_{i=1}^n (\;y_i - f_\beta(x_i)\;)^2 
 &&\\&
-f_\beta(x) = x\T\beta \quad\text{with}\quad\beta\in\dom{R}^m
+f_\beta(x) = x\T\beta \with\beta\in\dom{R}^m
 &&}
 This is the mean squared error and we want to minimize it using a linear function.
 Lets call the matrix of transposed $x_i$'s $X$ and the vector of $y_i$'s $y$.
@@ -102,7 +105,7 @@ When minimizing we seek the roots of the derivative of the loss, by doing so we 
 Sadly the very simple linear regression algorithm only allows for linear functions to be estimated. 
 Fortunately we can make things non-linear by defining a feature function which maps an input $x$ to feature space like so:
 \eqnsnn{
-\phi(x) \in \dom{R}^l \quad\text{with}\quad l\in\dom{N}
+\phi(x) \in \dom{R}^l \with l\in\dom{N}
 &&}
 For real valued $x\in\dom{R}$ we can create the quadratic feature vector using the following.
 \eqnsnn{
@@ -117,7 +120,7 @@ f_\beta(x) = \phi(x)\T\beta = \phi(x)_1*\beta_1 + \phi(x)_2*\beta_2 + \phi(x)_3*
 }
 Even more sophisticated features could be using gaussian functions at the datapoints which then amounts to a radial basis function.
 \eqnsnn{&
-\phi(x) = \mat{1 & \phi_1(x) & \cdots & \phi_N(x)}\T \quad\text{with}\quad \phi_i(x) = e^{-\frac{1}{2}||x_i-x||_2^2}
+\phi(x) = \mat{1 & \phi_1(x) & \cdots & \phi_N(x)}\T \with \phi_i(x) = e^{-\frac{1}{2}||x_i-x||_2^2}
 &&}
 
 \subsection{Regularization}
@@ -165,6 +168,81 @@ The total error will be a measure for generalization of the model, using this me
 For the start it may be useful to try lambdas of different orders of magnitude first.
 
 
+\section{Support Vector Machine}
+Imagine a binary classification problem where the data set consists of multivariate inputs $x_i \in \dom{R}^M$ and discrete outputs $y_i \in \{-1,1\}$ ($i = \{1,\dots,N\}$) which means that a point $x$ may either belong to class $1$ or $-1$.
+For this kind of problem we want to find a function that can separate the points of one class from another.
+In the 2 dimensional case, a simple separator would be a straight line and a point can either be on one or the other side of it.
+For higher dimensional $x$ the separator would be a hyperplane.
+
+To get used to the plane stuff again, lets review the point-normal form of a plane.
+In the simplest case where the plane intersects the origin, we can check if a point is in the plane by projecting its position vector $x$ onto the plane normal $n$. When $x$ is orthogonal to $n$ the projection $x\T n = 0$ and $x$ is in the nullspace of $n$ that is the plane.
+When the plane does not intersect the origin we first need to translate the coordinatesystem so that it does.
+We can do this by subtarcting a support vector of the plane $p_0$ (a position vector of a point that is part of the plane) from $x$, resulting in the check $(x-p_0)\T n = 0$ which can be rewritten as follows.
+\eqnsnn{&
+(x-p_0)\T n = 0 \equivalent x\T n + d = 0 \quad\text{with constant}\quad d = -p_0\T n
+&&}
+If $n$ is of unit length, then the distance of $x$ to the plane is given by the projection onto the normal $dist=x\T n + d$.
+When not normalized then the distance is given by the following.
+\eqnsnn{&
+dist = (x-p_0)\T \frac{n}{|n|} = \frac{x\T n}{|n|} - \frac{p_0\T n}{|n|} = \frac{x\T n + d}{|n|}
+&&}
+This means that the projection on the normal is the distance to the plane scaled by the normals length $x\T n + d = dist*|n|$.
+For a fixed projection value, this means, the smaller the normal the greater the distance.
+In fact for a projection of value $1$ the distance is $\frac{1}{|n|}$.
+We want the margin, that is the \enquote{width} of the separator, to be maximal.
+If we require projections to be at least $1$ (or $-1$ depending on the side) the margin is $\frac{1}{2*|n|}$. 
+
+Lets formulate the separation objective as a constrained optimization problem with an inequality constraint, from which we can set up a Lagrangian.
+\eqnsnn{&
+\hat{n} = \argmin_{n} \frac{1}{2}|n|^2 \quad\text{subject to}\quad y_i(x_i\T n + d) \geq 1
+&&\\&
+\mathcal{L}(n,d,\lambda) = \frac{1}{2}\sum_{j=1}^M (n_j)^2 - \sum_{i=1}^N \lambda_i *(y_i(x_i\T n + d)-1)
+&&}
+When the data does not allow for a linear separation of the datapoints, then this problem cannot be solved because there is no feasible region.
+But we can modify the problem in order to allow points to be on the wrong side of the plane at a cost.
+For this a new variable $\xi_i\geq 0$ is introduced which measures by how much the inequality constrained has been violated and sanitizes the constraint so that it becomes feasible.
+Of course, we want the amount of violations to be minimal, so we introduce a penalty on large $\xi$ which we control by a weighting parameter $C$.
+\eqnsnn{&
+\hat{n} = \argmin_{n} \frac{1}{2}|n|^2 + C*\sum_{i=1}^N\xi_i \quad\text{subject to}\quad y_i(x_i\T n + d) \geq 1-\xi_i ~\text{and}~ \xi_i \geq 0 
+&&\\&
+\mathcal{L}(n,d,\lambda,\mu) = \frac{1}{2}\sum_{j=1}^M (n_j)^2  + C*\sum_{i=1}^N \xi_i - \sum_{i=1}^N \lambda_i *(y_i(x_i\T n + d)-1+\xi_i) - \sum_{i=1}^n \mu_i*\xi_i
+&&}
+When solving the dual problem (which is always convex), we get the optimal normal and classifier as
+\eqnsnn{&
+\hat{n} = \sum_{i=1}^N \hat{\lambda}_iy_ix_i
+&&\\&
+f(x) = \text{sign}(x\T \hat{n} + d)
+&&\\&
+\hat{\lambda} = \argmax_\lambda \sum_{i=1}^N\lambda_i - \frac{1}{2}\sum_{i=1}^N \sum_{k=1}^N \lambda_i \lambda_k y_i y_k x_i\T x_k
+\quad\text{subject to}\quad \sum_{i=1}^N \lambda_i y_i = 0 ~\text{and}~ C \geq \lambda_i \geq 0
+&&}
+Since $\lambda_i$ are the lagrangian multipliers of the inequality constraint they are either inactive ($=0$) if the corresponding point is correctly classified and outside the margin, or active ($\neq 0$) if the corresponding point violates the constraint. 
+So all active $x_i$ contribute to the solution and are called the support vectors.
+
+\section{Logistic Regression}
+We already discussed one classifier, the support vector machine, that is a binary classifier.
+In this section we will take a look at a different approach to classification.
+As usual we have multivariate $x_i \in \dom{R}^M$ as inputs which are labeled with a discrete variable $y_i \in \dom{Y}=\{Y_1,\dots,Y_l\}$ ($i = {1,\dots,N}$).
+This time we want to know the probability of a class $y$ given that we observed some $x$ which is denoted by $P(y|x)$.
+
+To estimate the probabilities we make use of a discriminative function $f(x,y):\dom{R}^M \times \dom{Y} \to \dom{R}$ that we have to learn. The probabilities are then given as:
+\eqnsnn{&
+P(y|x) = \frac{e^{f(x,y)}}{Z} \mathtext{with normalization} Z = \sum_{y\in\dom{Y}} e^{f(x,y)}
+&&}
+The discriminative function has to have a high value when x is likely to be of class y, and a low value when it's not.
+This way of modeling probabilities is related to the Boltzmann distribution $p(x) = e^{-E(x)}$ where $E(x)$ is an energy and x has a high probability if its energy is low.
+
+Now that we set up the basic framework, we need to define the discriminative function.
+Lets formulate its as a linear function in features (similar to linear regression).
+\eqnsnn{&
+f(x,y) = \phi(x,y)\T\beta \mathtext{with for example} \phi(x,y) = \mat{\phi(x)[y=Y_1] \\ \phi(x)[y=Y_2] \\ \vdots \\ \phi(x)[y=Y_l]}\T
+&&}
+The $[cond]$ operator is $1$ if the condition is true, otherwise $0$. 
+The objective of our model is to maximize the likelihood $p(y_i|x_i)$ for each $(x_i,y_i)$, but instead it could also maximize the log likelihood $\ln(p(y_i|x_i))$ since the logarithm is a monotonic increasing function.
+Also, in machine learning we rather like to minimize stuff, so lets minimize the neg-log-likelihood by minimizing the following loss.
+\eqnsnn{&
+L(\beta) = \sum_{i=1}^N - \ln(\;p(y_i|x_i)\;) = - \sum_{i=1}^N\Big( f(x_i,y_i) - \sum_{y \in \dom{Y}} f(x_i,y) \Big)
+&&}
 
 
 
