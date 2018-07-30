@@ -235,15 +235,36 @@ This way of modeling probabilities is related to the Boltzmann distribution $p(x
 Now that we set up the basic framework, we need to define the discriminative function.
 Lets formulate its as a linear function in features (similar to linear regression).
 \eqnsnn{&
-f(x,y) = \phi(x,y)\T\beta \mathtext{with for example} \phi(x,y) = \mat{\phi(x)[y=Y_1] \\ \phi(x)[y=Y_2] \\ \vdots \\ \phi(x)[y=Y_l]}\T
+f(x,y) = \phi(x,y)\T\beta \with \phi(x,y) = \mat{\phi(x)[y=Y_1] \\ \phi(x)[y=Y_2] \\ \vdots \\ \phi(x)[y=Y_l]}
 &&}
 The $[cond]$ operator is $1$ if the condition is true, otherwise $0$. 
 The objective of our model is to maximize the likelihood $p(y_i|x_i)$ for each $(x_i,y_i)$, but instead it could also maximize the log likelihood $\ln(p(y_i|x_i))$ since the logarithm is a monotonic increasing function.
 Also, in machine learning we rather like to minimize stuff, so lets minimize the neg-log-likelihood by minimizing the following loss.
-\eqnsnn{&
-L(\beta) = \sum_{i=1}^N - \ln(\;p(y_i|x_i)\;) = - \sum_{i=1}^N\Big( f(x_i,y_i) - \sum_{y \in \dom{Y}} f(x_i,y) \Big)
+\eqnsnn{
+L(\beta) &= -\sum_{i=1}^N \ln(\;p(y_i|x_i)\;) 
+= - \sum_{i=1}^N\Big( \ln\big( e^{f(x_i,y_i)}\big) - \ln\big(\sum_{y' \in \dom{Y}} e^{f(x_i,y')}\big) \Big)
+&&\\
+&= - \sum_{i=1}^N\Big( \ln\big( e^{f(x_i,y_i)}\big)\Big) +\sum_{i=1}^N\Big( \ln\big(\sum_{y' \in \dom{Y}} e^{f(x_i,y')}\big) \Big) = -A(\beta) + B(\beta)
+&&
+}
+Lets assume for simplicity that $\phi(x)$ is scalar, so that there is one $\beta_c$ corresponding to $\phi(x,y)_c$ with $c \in \{1,\dots,l\}$ indicating the class $Y_c$. 
+\eqnsnn{
+\deriv{L(\beta)}{\beta_c} &= -\deriv{A(\beta)}{\beta_c} + \deriv{B(\beta)}{\beta_c}
+&&\\
+\deriv{A(\beta)}{\beta_c} &= \sum_{i=1}^N \deriv{f(x_i,y_i)}{\beta_c} = \sum_{i=1}^N \phi(x_i,y_i)_c\T
+&&\\
+\deriv{B(\beta)}{\beta_c} &= \sum_{i=1}^N \deriv{}{\beta_c} \ln\big(\sum_{y' \in \dom{Y}} e^{f(x_i,y')}\big) 
+&&\\
+&= \sum_{i=1}^N \frac{1}{\sum_{y' \in \dom{Y}} e^{f(x_i,y')}} * \deriv{}{\beta_c} \sum_{y' \in \dom{Y}} e^{f(x_i,y')}
+&&\\
+&=\sum_{i=1}^N \frac{1}{\sum_{y' \in \dom{Y}} e^{f(x_i,y')}} * \sum_{y' \in \dom{Y}} e^{f(x_i,y')}*\phi(x_i,y')_c\T
+&&\\
+&=\sum_{i=1}^N \frac{e^{f(x_i,Y_c)}}{\sum_{y' \in \dom{Y}} e^{f(x_i,y')}} * \phi(x_i,Y_c)_c\T
+&&\\
+&=\sum_{i=1}^N p(Y_c|x_i) * \phi(x_i,Y_c)_c\T
+&&\\
+\deriv{L(\beta)}{\beta_c} &= \sum_{i=1}^N p(Y_c|x_i) * \phi(x_i,Y_c)_c\T - \phi(x_i,y_i)_c\T
 &&}
-
 
 
 
