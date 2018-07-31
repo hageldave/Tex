@@ -362,7 +362,7 @@ And then we iterate forward and backward propagation.
 \section{PCA}
 Principle Component Analysis (PCA) is a method for dimensionality reduction.
 This may be useful when you have very high dimensional data, but want to reduce the amount of data you want to process in order to learn a function.
-In this case you may want to get a few of the \enquote{most important} parts of your highdimensional data point, or lets say a low dimensional datapoint which encodes the most important aspects of yout high dimensional point.
+In this case you may want to get a few of the \enquote{most important} parts of your highdimensional data point, or lets say a low dimensional datapoint which encodes the most important aspects of your high dimensional point.
 
 A way to do that, is to find a projection of our data $x_i \in \dom R^M$ onto $z_i \in \dom R^P$ where $P \leq M$.
 Lets look at the projection from the other side, lets say we transform $z$ to $x$ using the following, where $V_P$ is the projection matrix and $\mu$ is a vector accounting for a translation in $\dom R^M$.
@@ -410,7 +410,47 @@ What we want to minimize is the projection error, which we can estimate by back 
 \eqnsnn {&
 \hat{V}_P = \argmin_{V_P} \sum_{i=1}^N ||x_i- V_PV_P\T x_i||^2 
 &&}
+This time we will derive the optimum by observing the properties of the equation instead of root finding in the derivative.
+Lets reformulate the loss a bit.
+\eqnsnn {
+L(V_P) &= \sum_{i=1}^N (x_i- V_PV_P\T x_i)\T(x_i- V_PV_P\T x_i)
+&&\\
+&= \sum_{i=1}^N x_i\T x_i - 2 x_i\T V_P V_P\T x_i 
++ x_i\T V_P V_P\T V_P V_P\T x_i
+&&\\
+& = \sum_{i=1}^N x_i\T x_i - 2x_i\T V_P V_P\T x_i  + x_i\T V_P V_P\T x_i
+&&\\
+&= \sum_{i=1}^N x_i\T x_i - x_i\T V_P V_P\T x_i
+&&\\
+&= C - \sum_{i=1}^N x_i\T V_P V_P\T x_i \with C = \sum_{i=1}^N x_i\T x_i
+&&\\
+&= C - \sum_{i=1}^N || V_P\T x_i ||^2 \mathtext{($V_P\T$ composed of row vectors $v_j\T$)}
+&&\\
+&= C - \sum_{i=1}^N \sum_{j=1}^P (v_j\T x_i)*(v_j\T x_i)
+ \;=\; C - \sum_{j=1}^P \sum_{i=1}^N  (x_i\T v_j)*(x_i\T v_j)
+&&\\
+&= C - \sum_{j=1}^P ||X v_j||^2 \mathtext{($X$ composed of row vectors $x_i\T$)}
+&&\\
+&= C - \sum_{j=1}^P v_j\T X\T X v_j
+&&}
+So whatwe can see from this, is that the loss will be minimal if we maximize $\sum_{j=1}^P v_j\T X\T X v_j$.
+We could again find the root of its derivative but, it will be more fun with some clever factorization of $X\T X$, which is the Eigendecomposition. 
+Since $X\T X$ is a symmetric matrix, its Eigendecomposition is
+\eqnsnn{&
+X\T X = Q\Lambda Q\T \mathtext{with orthonormal} Q \mathtext{and diagonal} \Lambda
+&&\\
+& \argmax_{v_{1:P}} \sum_{j=1}^P v_j\T Q\Lambda Q\T v_j
+&&} 
+Suppose the eigenvlus $\lambda_1,\dots,\lambda_M$ are sorted in value descending order on the diagonal of $\Lambda$.
+To maximize the the above expression, we need to choose $v_{1:P}$ to be the first $P$ eigenvectors $q_i$ corresponding to the $P$ largest eigenvalues. 
+If we could, we would choose all $v_j$ to be the first eigenvector, as this would truly yield the maximum, but due to our constraint of $v_j$s being orthonormal to each other we can't do that.
 
+One last thing to be mentioned before moving on is, that instead of using the Eigendecomposition of $X\T X$ to get the optimal $V_P$ we can as well use the singular value decomposition (SVD) of $X$ to get there:
+\eqnsnn{&
+X = USW\T \mathtext{with orthonormal} U,\;W \mathtext{and diagonal} S
+&&\\&
+X\T X = (USW\T)\T (USW\T) = W S\T U\T USW\T = WS^2W\T = Q\Lambda Q\T \implies W = Q \quad S^2=\Lambda
+&&}
 
 
 
