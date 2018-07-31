@@ -56,6 +56,7 @@
     \large{David H\"agele}, \normalsize{\today}
    \end{center}
    
+\tableofcontents
 
 \section{Machine Learning Briefly}
 The goal of machine learning is to estimate or \enquote{learn} a mapping $f$ from one domain $\dom{X}$ to another $\dom{Y}$ by using a set of data points.
@@ -92,7 +93,7 @@ X = \mat{x_1\T\\\vdots\\x_n\T} \quad y = \mat{y_1\\\vdots\\y_n}
 &&}
 When minimizing we seek the roots of the derivative of the loss, by doing so we can derive the optimal solution for beta.
 \eqnsnn{
-\deriv{L(\beta)}{\beta} = 0 ~&\equivalent~ (y-X\beta)\T X + (y-X\beta)\T X = 2*(y-X\beta)\T X = 0
+\deriv{L(\beta)}{\beta} = 0 ~&\equivalent~ -(y-X\beta)\T X - (y-X\beta)\T X = -2*(y-X\beta)\T X = 0
 &&\\&
 \equivalent (y-X\beta)\T X = X\T y - X\T X\beta = 0
 &&\\&
@@ -130,11 +131,13 @@ Interestingly, the optimal solution to the following loss has this exact form.
 \eqnsnn{
 L(\beta) = (y&-X\beta)\T(y-X\beta) + \lambda*\beta\T\beta
 &&\\
-\deriv{L(\beta)}{\beta} = 0 &\equivalent 2(y-X\beta)\T X + 2\lambda*\beta\T = 0
-\equivalent (y-X\beta)\T X + \lambda*\beta\T = 0
+\deriv{L(\beta)}{\beta} = 0 &\equivalent -2(y-X\beta)\T X + 2\lambda*\beta\T = 0
 &&\\
-&\equivalent X\T y - X\T X\beta + \lambda*\beta = 0 
-\equivalent X\T y = X\T X\beta - \lambda*\beta = (X\T X - \lambda I) \beta
+&\equivalent \lambda*\beta\T - (y-X\beta)\T X = 0
+&&\\
+&\equivalent \lambda*\beta - X\T y + X\T X\beta = 0 
+&&\\
+&\equivalent X\T y = X\T X\beta - \lambda*\beta = (X\T X - \lambda I) \beta
 &&\\
 &\equivalent (X\T X - \lambda I)^{-1}X\T y = \beta
 &&} 
@@ -223,14 +226,14 @@ So all active $x_i$ contribute to the solution and are called the support vector
 We already discussed one classifier, the support vector machine, that is a binary classifier.
 In this section we will take a look at a different approach to classification.
 As usual we have multivariate $x_i \in \dom{R}^M$ as inputs which are labeled with a discrete variable $y_i \in \dom{Y}=\{Y_1,\dots,Y_l\}$ ($i = {1,\dots,N}$).
-This time we want to know the probability of a class $y$ given that we observed some $x$ which is denoted by $P(y|x)$.
+This time we want to know the probability of a class $y$ given that we observed some $x$ which is denoted by $p(y|x)$.
 
 To estimate the probabilities we make use of a discriminative function $f(x,y):\dom{R}^M \times \dom{Y} \to \dom{R}$ that we have to learn.
 The discriminative function has to have a high value when $x$ is likely to be of class $y$, and a low value when it's not so that $y(x) = \argmax_y f(x,y)$ where $y(x)$ is the correct class for $x$.
 
 Similar to the Boltzmann distribution $p(x) = e^{-E(x)}$ where $E(x)$ is an energy (or error), the probabilities are calculated as:
 \eqnsnn{&
-P(y|x) = \frac{e^{f(x,y)}}{Z} \mathtext{with normalization} Z = \sum_{y'\in\dom{Y}} e^{f(x,y')}
+p(y|x) = \frac{e^{f(x,y)}}{Z} \mathtext{with normalization} Z = \sum_{y'\in\dom{Y}} e^{f(x,y')}
 &&}
 
 Now that we set up the basic framework, we need to define the discriminative function.
@@ -238,7 +241,8 @@ Lets formulate it as a linear function in features (similar to linear regression
 \eqnsnn{&
 f(x,y) = \phi(x,y)\T\beta \with \phi(x,y) = \mat{\phi(x)[y=Y_1] \\ \phi(x)[y=Y_2] \\ \vdots \\ \phi(x)[y=Y_l]}
 &&}
-The $[cond]$ operator is $1$ if the condition is true, otherwise $0$. 
+The $[cond]$ operator is $1$ if the condition is true, otherwise $0$.
+
 The objective of our model is to maximize the likelihood $p(y_i|x_i)$ for each $(x_i,y_i)$, but instead it could also maximize the log likelihood $\ln(p(y_i|x_i))$ since the logarithm is a monotonic increasing function.
 Also, in machine learning we rather like to minimize stuff, so lets minimize the neg-log-likelihood by minimizing the following loss.
 \eqnsnn{
@@ -248,7 +252,7 @@ L(\beta) &= -\sum_{i=1}^N \ln(\;p(y_i|x_i)\;)
 &= - \sum_{i=1}^N\Big( \ln\big( e^{f(x_i,y_i)}\big)\Big) +\sum_{i=1}^N\Big( \ln\big(\sum_{y' \in \dom{Y}} e^{f(x_i,y')}\big) \Big) = -A(\beta) + B(\beta)
 &&
 }
-Lets assume for simplicity that $\phi(x)$ is scalar, so that there is one $\beta_c$ corresponding to $\phi(x,y)_c$ with $c \in \{1,\dots,l\}$ indicating the class $Y_c$. 
+The derivative of the loss is then calculated from the two separated sums $A(\beta)$ and $B(\beta)$:
 \eqnsnn{
 \deriv{L(\beta)}{\beta} &= -\deriv{A(\beta)}{\beta} + \deriv{B(\beta)}{\beta}
 &&\\
@@ -265,7 +269,7 @@ Lets assume for simplicity that $\phi(x)$ is scalar, so that there is one $\beta
 &&\\
 &=\sum_{i=1}^N \sum_{y' \in \dom{Y}} p(y'|x_i) * \phi(x_i,y')\T
 &&\\
-\Big(\deriv{L(\beta)}{\beta}\Big)\T = \nabla_\beta L(\beta) &= \sum_{i=1}^N \Big( \sum_{y' \in \dom{Y}} p(y'|x_i) * \phi(x_i,y') \Big) - \phi(x_i,y_i)
+\Big(\deriv{L(\beta)}{\beta}\Big)\T &= \nabla_\beta L(\beta) = \sum_{i=1}^N \Big( \sum_{y' \in \dom{Y}} p(y'|x_i) * \phi(x_i,y') \Big) - \phi(x_i,y_i)
 &&}
 
 As can be seen, the gradient of the loss is not linear in $\beta$ because $\beta$ sits inside of the non-linear calculation of $p(y'|x_i)$.
@@ -311,6 +315,101 @@ This is the newton step we can use to iteratively work our way to the optimal $\
 \\$\beta_{n+1} = \beta_n+\delta$.
 What is missing in order to optimize $\beta$ for logistic regression is the Hessian of the loss $\mathcal{H}_L(\beta) = \deriv{}{\beta}\nabla L(\beta)$, which is left to the reader to derive.
 
+
+\section{Neural Networks}
+Neural networks currently are the very hype in many fields of inteligent systems, probably because they are so flexible.
+But lets not get carried away and start by defining a regression problem.
+Given data $D=\{x_i,y_i\}_{i=1}^N$ with multivariate $x_i \in \dom{R}^M$ and scalar $y\in\dom{R}$ we want to estimate again as in linear regression $y=f(x)$.
+For this, we model the function $f$ as follows:
+\eqnsnn{&
+f(x) = z_{L+1} = W_L*x_L \with x_l = \sigma(z_l) \;\;l\in\{2,\dots,L\} \mathtext{,} \sigma(z) = \frac{1}{1+e^{-z}} \mathtext{and} x_1 = x
+&&}
+In this equation we have $l$ matrices $W_1 \dots W_l$ with dimensions $W_1^{d(2)\times M}\; W_2^{d(3)\times d(2)}\dots W_l^{1\times d(l)}$. 
+The sigmoid function $\sigma$ takes the role of the \enquote{activation function} which is an analogy to neurons in a brain which can propagate an action potential based on the magnitude of the signal.
+
+Lets get more intuition on this from a simple example.
+Suppose $x \in \dom{R}^3$ and $y \in \dom{R}^1$ and we have three matrices $W_1\;W_2\;W_3$.
+To be able to input our $x$ into the neural net we have to choose the first dimension of $W_1$ to be $3$ and the last dimension of $W_3$ to be $1$ in order to map to $\dom{R}^1$. The other dimensions are left to be choosen freely. Lets choose $W_2^{10\times 10}$ which implies $W_1^{10 \times 3}$ and $W_3^{1 \times 10}$.
+Our function is then:
+\eqnsnn{&
+f(x) = W_3\;\sigma\Big(W_2\;\sigma(W_1x)\Big)
+&&}
+This algorithm is called the forward propagation of $x$ through the neural network.
+The unknowns in this equation are the entries of the matrices, the so called weights.
+In order to optimize the weights we need to define a cost function $c(f,y)$ (a loss) for the prediction $f$.
+In the literature, we can find many different cost functions that can be used, we'll stick to the well known mean squared error.
+\eqnsnn{&
+c(f,y) = (f-y)^2 \mathtext{so that} C_\text{MSE} = \frac1n \sum_{i=1}^N c(f(x_i),y_i)
+&&\\&
+\deriv{\;c(f,y)}{f} = 2(f-y)\T \mathtext{if $f$ and $y$ were vectors, in our case we can ommit the transpose}
+&&}
+Lets call $\deriv{\;c(f,y)}{f} = \delta_{L+1}$ as it is the derivative of the loss with repect to $z_{L+1}$ (in our case $\delta_4$ the derivative of $f(x) = z_4=W_3\;x_3$).
+Due to the chain rule the derivatives for other layers are recursively calculated like this:
+\eqnsnn{&
+\delta_l = \deriv{c}{z_l} = \deriv{c}{z_{l+1}} * \deriv{z_{l+1}}{x_l}*\deriv{x_l}{z_l}
+&&}
+The derivative of the of the loss with respect to a specific weight of a matrix $W_{l,ij}$ is given by:
+\eqnsnn{&
+\deriv{c}{W_{l,ij}} = \deriv{c}{z_{l+1,i}}*\deriv{z_{l+1,i}}{W_{l,ij}}
+&&}
+
+To optimize the weights of the matrices, we feed the neural net all of our data samples $x_i$ and collect the losses $c(f(x_i),y_i)$.
+We then backpropagate the losses through the net, which means we collect the derivatives of the losss for all weights and sum corresponding derivatives up forming a total gradient for a specific weight.
+The weights are then updated using a gradient descend step which reads $W_{l,ij} = W_{l,ij} - \alpha \deriv{c}{W_{l,ij}}$ with learning rate $\alpha$ (probably $\alpha=0.1$).
+And then we iterate forward and backward propagation.
+
+
+\section{PCA}
+Principle Component Analysis (PCA) is a method for dimensionality reduction.
+This may be useful when you have very high dimensional data, but want to reduce the amount of data you want to process in order to learn a function.
+In this case you may want to get a few of the \enquote{most important} parts of your highdimensional data point, or lets say a low dimensional datapoint which encodes the most important aspects of yout high dimensional point.
+
+A way to do that, is to find a projection of our data $x_i \in \dom R^M$ onto $z_i \in \dom R^P$ where $P \leq M$.
+Lets look at the projection from the other side, lets say we transform $z$ to $x$ using the following, where $V_P$ is the projection matrix and $\mu$ is a vector accounting for a translation in $\dom R^M$.
+\eqnsnn{&
+x \approx V_P z + \mu
+&&\\&
+err = \sum_{i=1}^N || V_P z_i + \mu - x_i ||^2
+&&}
+The error $err$ measures the mean squared error of the transformation of $z$ to $x$.
+Using this, we can derive the optimal transformation of $x$ to $z$ when minimizing with respect to $z$.
+\eqnsnn{
+\hat{z}_{1:N} &= \argmin_{z_{1:N}} \sum_{i=1}^N || V_P z_i + \mu - x_i ||^2
+&&\\
+0 &= \deriv{}{z_i}\sum_{i=1}^N || V_P z_i + \mu - x_i ||^2 = \deriv{}{z_i} (V_P z_i + \mu - x_i)\T(V_P z_i + \mu - x_i)
+&&\\
+ &= 2*(V_P z_i + \mu - x_i)\T V_P
+&&\\
+\equivalent 0 &= V_P\T V_P z_i + V_P\T(\mu-x_i)
+&&}
+If we constrain $V_p$ to be orthonormal (composed of orthonormal vectors), then $V_P\T V_P = I$ and this simplifies to the follownig:
+\eqnsnn{&
+z_i = V_P\T(x_i-\mu)
+&&}
+Doing the same for $\mu$ yields the following:
+\eqnsnn{
+\hat{\mu} &= \argmin_{\mu} \sum_{i=1}^N || V_P z_i + \mu - x_i ||^2
+&&\\
+0 &= \deriv{}{\mu} \sum_{i=1}^N (V_P z_i + \mu - x_i)\T(V_P z_i + \mu - x_i)
+ = 2* \sum_{i=1}^N (V_P z_i + \mu - x_i)\T 
+&&\\
+\equivalent 0 &= N*\mu*\sum_{i=1}^N (V_P z_i - x_i)
+&&\\
+\equivalent \mu &= \frac1N\sum_{i=1}^N V_Pz_i - \frac1N\sum_{i=1}^N x_i
+&&}
+So $\mu$ is the difference of the expeted value of the projected $z_i$ and the expected value $x_i$.
+Lets assume that $E[z] = 0$ because that would be nice, and we don't care about the expected value of $z$ as it is unrelated to what we try to achieve. 
+Due to the linearity of the expected value the projection of $z$ also has $0$ as expected value.
+\eqnsnn{&
+\mu = \frac1N\sum_{i=1}^N x_i = E[x]
+&&}
+
+So the projection $z_i = V_P\T(x_i-\mu)$ is the projecting the \enquote{centered} $x_i$.
+For the derivation of $V_P$ lets assume that $x_i$ are already centered ($E(x)=0$).
+What we want to minimize is the projection error, which we can estimate by back projecting the projection of $x_i$ and comparing it with the initial $x_i$.
+\eqnsnn {&
+\hat{V}_P = \argmin_{V_P} \sum_{i=1}^N ||x_i- V_PV_P\T x_i||^2 
+&&}
 
 
 
