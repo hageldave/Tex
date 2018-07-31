@@ -225,15 +225,16 @@ In this section we will take a look at a different approach to classification.
 As usual we have multivariate $x_i \in \dom{R}^M$ as inputs which are labeled with a discrete variable $y_i \in \dom{Y}=\{Y_1,\dots,Y_l\}$ ($i = {1,\dots,N}$).
 This time we want to know the probability of a class $y$ given that we observed some $x$ which is denoted by $P(y|x)$.
 
-To estimate the probabilities we make use of a discriminative function $f(x,y):\dom{R}^M \times \dom{Y} \to \dom{R}$ that we have to learn. The probabilities are then given as:
+To estimate the probabilities we make use of a discriminative function $f(x,y):\dom{R}^M \times \dom{Y} \to \dom{R}$ that we have to learn.
+The discriminative function has to have a high value when $x$ is likely to be of class $y$, and a low value when it's not so that $y(x) = \argmax_y f(x,y)$ where $y(x)$ is the correct class for $x$.
+
+Similar to the Boltzmann distribution $p(x) = e^{-E(x)}$ where $E(x)$ is an energy (or error), the probabilities are calculated as:
 \eqnsnn{&
-P(y|x) = \frac{e^{f(x,y)}}{Z} \mathtext{with normalization} Z = \sum_{y\in\dom{Y}} e^{f(x,y)}
+P(y|x) = \frac{e^{f(x,y)}}{Z} \mathtext{with normalization} Z = \sum_{y'\in\dom{Y}} e^{f(x,y')}
 &&}
-The discriminative function has to have a high value when x is likely to be of class y, and a low value when it's not.
-This way of modeling probabilities is related to the Boltzmann distribution $p(x) = e^{-E(x)}$ where $E(x)$ is an energy and x has a high probability if its energy is low.
 
 Now that we set up the basic framework, we need to define the discriminative function.
-Lets formulate its as a linear function in features (similar to linear regression).
+Lets formulate it as a linear function in features (similar to linear regression).
 \eqnsnn{&
 f(x,y) = \phi(x,y)\T\beta \with \phi(x,y) = \mat{\phi(x)[y=Y_1] \\ \phi(x)[y=Y_2] \\ \vdots \\ \phi(x)[y=Y_l]}
 &&}
@@ -249,24 +250,66 @@ L(\beta) &= -\sum_{i=1}^N \ln(\;p(y_i|x_i)\;)
 }
 Lets assume for simplicity that $\phi(x)$ is scalar, so that there is one $\beta_c$ corresponding to $\phi(x,y)_c$ with $c \in \{1,\dots,l\}$ indicating the class $Y_c$. 
 \eqnsnn{
-\deriv{L(\beta)}{\beta_c} &= -\deriv{A(\beta)}{\beta_c} + \deriv{B(\beta)}{\beta_c}
+\deriv{L(\beta)}{\beta} &= -\deriv{A(\beta)}{\beta} + \deriv{B(\beta)}{\beta}
 &&\\
-\deriv{A(\beta)}{\beta_c} &= \sum_{i=1}^N \deriv{f(x_i,y_i)}{\beta_c} = \sum_{i=1}^N \phi(x_i,y_i)_c\T
+\deriv{A(\beta)}{\beta} &= \sum_{i=1}^N \deriv{f(x_i,y_i)}{\beta} = \sum_{i=1}^N \phi(x_i,y_i)\T
 &&\\
-\deriv{B(\beta)}{\beta_c} &= \sum_{i=1}^N \deriv{}{\beta_c} \ln\big(\sum_{y' \in \dom{Y}} e^{f(x_i,y')}\big) 
+\deriv{B(\beta)}{\beta} &= \sum_{i=1}^N \deriv{}{\beta} \ln\big(\sum_{y' \in \dom{Y}} e^{f(x_i,y')}\big) 
 &&\\
-&= \sum_{i=1}^N \frac{1}{\sum_{y' \in \dom{Y}} e^{f(x_i,y')}} * \deriv{}{\beta_c} \sum_{y' \in \dom{Y}} e^{f(x_i,y')}
+&= \sum_{i=1}^N \frac{1}{\sum_{y' \in \dom{Y}} e^{f(x_i,y')}} * \deriv{}{\beta} \sum_{y' \in \dom{Y}} e^{f(x_i,y')}
 &&\\
-&=\sum_{i=1}^N \frac{1}{\sum_{y' \in \dom{Y}} e^{f(x_i,y')}} * \sum_{y' \in \dom{Y}} e^{f(x_i,y')}*\phi(x_i,y')_c\T
+&=\sum_{i=1}^N \frac{1}{Z} * \sum_{y' \in \dom{Y}} e^{f(x_i,y')}*\phi(x_i,y')\T
 &&\\
-&=\sum_{i=1}^N \frac{e^{f(x_i,Y_c)}}{\sum_{y' \in \dom{Y}} e^{f(x_i,y')}} * \phi(x_i,Y_c)_c\T
+&=\sum_{i=1}^N \sum_{y' \in \dom{Y}} 
+\frac{e^{f(x_i,y')}}{Z} * \phi(x_i,y')\T
 &&\\
-&=\sum_{i=1}^N p(Y_c|x_i) * \phi(x_i,Y_c)_c\T
+&=\sum_{i=1}^N \sum_{y' \in \dom{Y}} p(y'|x_i) * \phi(x_i,y')\T
 &&\\
-\deriv{L(\beta)}{\beta_c} &= \sum_{i=1}^N p(Y_c|x_i) * \phi(x_i,Y_c)_c\T - \phi(x_i,y_i)_c\T
+\Big(\deriv{L(\beta)}{\beta}\Big)\T = \nabla_\beta L(\beta) &= \sum_{i=1}^N \Big( \sum_{y' \in \dom{Y}} p(y'|x_i) * \phi(x_i,y') \Big) - \phi(x_i,y_i)
 &&}
 
+As can be seen, the gradient of the loss is not linear in $\beta$ because $\beta$ sits inside of the non-linear calculation of $p(y'|x_i)$.
+So unfortunately we cannot analytically derive the optimal $\beta$, but instead we can use the Newton algorithm to iteratively get there.
 
+\subsection{Newton Algorithm}
+The newton algortihm can be derived from a taylor expansion of a function.
+Lets review the taylor expanson first, by writing down a univariate $(n-1)$ order taylor of $f$ around $x$ with step size $h$.
+\eqnsnn{&
+f(x+h) \approx f(x) + \frac{f'(x)*h}{1!} + \frac{f''(x)*h^2}{2!} + \frac{f^3(x)*h^3}{3!} + \dots + \mathcal{O}(h^n)
+&&}
+From this, the forward difference can be derived (which is not what we want, but shows how neat Taylor is).
+\eqnsnn{&
+f(x+h) \approx f(x) + f'(x)*h + \mathcal{O}(h^2) \;\equivalent\; \frac{f(x+h)-f(x)}{h} \approx f'(x) + \mathcal{O}(h^2)
+&&}
+
+Lets do something else, lets set a first order Taylor to zero (root finding):
+\eqnsnn{
+f(x_{n+1}) = f(x_n+h) &\approx f(x_n) + f'(x_n)*h + \mathcal{O}(h^2)
+&&\\
+0 &\approx f(x_n) + f'(x_n)*h
+&&\\
+0 &\approx \frac{f(x_n)}{f'(x_n)} + h
+&&\\
+h &\approx - \frac{f(x_n)}{f'(x_n)}
+&&}
+Here we derived the stepsize $h$ of a newton step, which we can use to update the position $x_n$ in order to get $x_{n+1} = x_n+h$. 
+When iterating this newton step, we approach a root of $f(x)$.
+
+In our case, we want to find a root of the gradient $\nabla L$, lets again formulate a Taylor expansion, this time multivariate second order with step $\delta$ and Hessian $\mathcal{H}_L$.
+\eqnsnn{
+L(\beta_{n+1}) = L(\beta_n + \delta) &\approx L(\beta_n) + \nabla L(\beta_n)\T \delta + \frac1 2 \delta\T \mathcal{H}_L(\beta_n)\delta + \mathcal{O}(|\delta|^3)
+&&}
+The derivative of this taylor with respect to the step $\delta$ yields an approximation of the derivative of $L$ around $\beta_n$. To find a root of it, we set it to zero.
+\eqnsnn{
+0 = \deriv{L(\beta_n+\delta)}{\delta} &\approx \nabla L(\beta_n)\T + \delta\T \mathcal{H}_L(\beta_n)
+&&\\
+0 &\approx \nabla L(\beta_n)\T[\mathcal{H}_L(\beta_n)]^{-1} + \delta\T \mathcal{H}_L(\beta_n)[\mathcal{H}_L(\beta_n)]^{-1} = \nabla L(\beta_n)\T[\mathcal{H}_L(\beta_n)]^{-1} + \delta\T
+&&\\
+\delta &\approx -[\mathcal{H}_L(\beta_n)]^{-1}\nabla L(\beta_n)
+&&}
+This is the newton step we can use to iteratively work our way to the optimal $\beta$ using 
+\\$\beta_{n+1} = \beta_n+\delta$.
+What is missing in order to optimize $\beta$ for logistic regression is the Hessian of the loss $\mathcal{H}_L(\beta) = \deriv{}{\beta}\nabla L(\beta)$, which is left to the reader to derive.
 
 
 
