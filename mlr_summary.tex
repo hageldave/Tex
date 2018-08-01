@@ -93,7 +93,7 @@ X = \mat{x_1\T\\\vdots\\x_n\T} \quad y = \mat{y_1\\\vdots\\y_n}
 &&}
 When minimizing we seek the roots of the derivative of the loss, by doing so we can derive the optimal solution for beta.
 \eqnsnn{
-\deriv{L(\beta)}{\beta} = 0 ~&\equivalent~ -(y-X\beta)\T X - (y-X\beta)\T X = -2*(y-X\beta)\T X = 0
+\deriv{L(\beta)}{\beta} = 0 ~&\equivalent -(y-X\beta)\T X - (y-X\beta)\T X = -2*(y-X\beta)\T X = 0
 &&\\&
 \equivalent (y-X\beta)\T X = X\T y - X\T X\beta = 0
 &&\\&
@@ -126,7 +126,7 @@ Even more sophisticated features could be using gaussian functions at the datapo
 
 \subsection{Regularization}
 Maybe you may have noticed that the linear regression algorithm may fail in case that $(X\T X)$ is not invertible.
-To ensure invertibility a tiny quantity can be added to or subtracted from the diagonal of the matrix like so: $(X\T X - \lambda I)$.
+To ensure invertibility a tiny quantity can be added to the diagonal of the matrix like so: $(X\T X + \lambda I)$.
 Interestingly, the optimal solution to the following loss has this exact form.
 \eqnsnn{
 L(\beta) = (y&-X\beta)\T(y-X\beta) + \lambda*\beta\T\beta
@@ -137,9 +137,9 @@ L(\beta) = (y&-X\beta)\T(y-X\beta) + \lambda*\beta\T\beta
 &&\\
 &\equivalent \lambda*\beta - X\T y + X\T X\beta = 0 
 &&\\
-&\equivalent X\T y = X\T X\beta - \lambda*\beta = (X\T X - \lambda I) \beta
+&\equivalent X\T y = X\T X\beta + \lambda*\beta = (X\T X + \lambda I) \beta
 &&\\
-&\equivalent (X\T X - \lambda I)^{-1}X\T y = \beta
+&\equivalent (X\T X + \lambda I)^{-1}X\T y = \beta
 &&} 
 The loss function can be viewed as a combination of penalties for $\beta$.
 The first penalty is the mean squared error from before which is large when $\beta$ cannot reproduce the samples $y$ well.
@@ -154,7 +154,7 @@ In our case we can use regularization to allow the model to have a less perfect 
 The degree to which the model can violate the mean squared error depends on $\lambda$.
 
 \subsection{Cross Validation}
-In order to find the perfect regularization parameter $\lambda$ in order for our model to generalize well we need to try some out.
+In order to find the perfect regularization parameter $\lambda$ for our model to generalize well, we need to try some $\lambda$s out.
 This can be done using cross validation.
 In cross validation, we divide our data set into $K$ euqually sized parts (randomly), then we train our model using K-1 parts of the data and validate the model by computing the mean suared error using the missing part.
 This is done k times so that each part has been used for validation once and the errors are averaged.
@@ -193,7 +193,7 @@ This means that the projection on the normal is the distance to the plane scaled
 For a fixed projection value, this means, the smaller the normal the greater the distance.
 In fact for a projection of value $1$ the distance is $\frac{1}{|n|}$.
 We want the margin, that is the \enquote{width} of the separator, to be maximal.
-If we require projections to be at least $1$ (or $-1$ depending on the side) the margin is $\frac{1}{2*|n|}$. 
+If we require projections to be at least $1$ (or $-1$ depending on the side) the margin is $\frac{2}{|n|}$. 
 
 Lets formulate the separation objective as a constrained optimization problem with an inequality constraint, from which we can set up a Lagrangian.
 \eqnsnn{&
@@ -433,7 +433,7 @@ L(V_P) &= \sum_{i=1}^N (x_i- V_PV_P\T x_i)\T(x_i- V_PV_P\T x_i)
 &&\\
 &= C - \sum_{j=1}^P v_j\T X\T X v_j
 &&}
-So whatwe can see from this, is that the loss will be minimal if we maximize $\sum_{j=1}^P v_j\T X\T X v_j$.
+So what we can see from this, is that the loss will be minimal if we maximize $\sum_{j=1}^P v_j\T X\T X v_j$.
 We could again find the root of its derivative but, it will be more fun with some clever factorization of $X\T X$, which is the Eigendecomposition. 
 Since $X\T X$ is a symmetric matrix, its Eigendecomposition is
 \eqnsnn{&
@@ -441,8 +441,8 @@ X\T X = Q\Lambda Q\T \mathtext{with orthonormal} Q \mathtext{and diagonal} \Lamb
 &&\\
 & \argmax_{v_{1:P}} \sum_{j=1}^P v_j\T Q\Lambda Q\T v_j
 &&} 
-Suppose the eigenvlus $\lambda_1,\dots,\lambda_M$ are sorted in value descending order on the diagonal of $\Lambda$.
-To maximize the the above expression, we need to choose $v_{1:P}$ to be the first $P$ eigenvectors $q_i$ corresponding to the $P$ largest eigenvalues. 
+Suppose the eigenvalues $\lambda_1,\dots,\lambda_M$ are sorted in value descending order on the diagonal of $\Lambda$.
+To maximize the above expression, we need to choose $v_{1:P}$ to be the first $P$ eigenvectors $q_i$ corresponding to the $P$ largest eigenvalues. 
 If we could, we would choose all $v_j$ to be the first eigenvector, as this would truly yield the maximum, but due to our constraint of $v_j$s being orthonormal to each other we can't do that.
 
 One last thing to be mentioned before moving on is, that instead of using the Eigendecomposition of $X\T X$ to get the optimal $V_P$ we can as well use the singular value decomposition (SVD) of $X$ to get there:
