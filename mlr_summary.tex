@@ -404,7 +404,7 @@ Due to the linearity of the expected value the projection of $z$ also has $0$ as
 \mu = \frac1N\sum_{i=1}^N x_i = E[x]
 &&}
 
-So the projection $z_i = V_P\T(x_i-\mu)$ is the projecting the \enquote{centered} $x_i$.
+So the projection $z_i = V_P\T(x_i-\mu)$ is projecting the \enquote{centered} $x_i$.
 For the derivation of $V_P$ lets assume that $x_i$ are already centered ($E(x)=0$).
 What we want to minimize is the projection error, which we can estimate by back projecting the projection of $x_i$ and comparing it with the initial $x_i$.
 \eqnsnn {&
@@ -450,6 +450,69 @@ One last thing to be mentioned before moving on is, that instead of using the Ei
 X = USW\T \mathtext{with orthonormal} U,\;W \mathtext{and diagonal} S
 &&\\&
 X\T X = (USW\T)\T (USW\T) = W S\T U\T USW\T = WS^2W\T = Q\Lambda Q\T \implies W = Q \quad S^2=\Lambda
+&&}
+
+
+\section{The Kernel Trick}
+Remember when we introduced features to make things non-linear in linear regression.
+We use features to calculate new quantities from a given datapoint such as 
+\\$\phi(x) = \mat{1 & x & x^2 & e^x & e^{-x} & \sin(x) & \cos(x)}\T$.
+This is a very powerful way to allow for non-linearity but on the downside of it is the question:
+How to choose features so that some property of the original function or distribution becomes linear?
+This is not easy and sometimes coming up with the right features is impossible.
+
+The kernel trick is a way to get rid of explicitly defining features.
+Before diggin in, lets define what a kernel in this sense even is.
+A kernel is the dot product of the feature vectors of two inputs $x$ and $x'$.
+\eqnsnn{&
+k(x,x') = \phi(x)\T\phi(x')
+&&}
+This implies that a kernel is symmtric with respect to argument order $k(x,x') = k(x',x)$.
+Of course when we difine features, we imply a kernel function.
+If on the other hand we define a kernel function, we imply features.
+Due to the kernel being a dot product, it is a measure of similarity of the feature vectors and thus also a measure of similarity of $x$ and $x'$.
+If we keep this in mind, we can define kernels with respect to the distance of two points, for example a gaussian kernel:
+\eqnsnn{&
+k_\mathcal{N}(x,x') = \mathcal{N}(||x-x'||, \mu, \sigma^2) = \frac1{\sqrt{2\pi\sigma^2}}e^{\frac{(||x-x'||-\mu)^2}{2\sigma^2}}
+&&}
+
+The \enquote{trick} in the kernel trick is now to get rid of the features $\phi(x)$ by reformulating the problem to only include dot products $\phi(x)\T\phi(x')$, which are then replaced by kernels $k(x,x')$.
+Lets illustrate this process on various examples in the following.
+
+\subsection{Kernel PCA}
+In PCA we have following eigenvalue problem.
+\eqnsnn{&
+X\T X  v_j = \lambda v_j \mathtext{where $v_j$ is one of the eigenvectors used for the projection}
+&&\\
+&
+\lambda v_j = X\T X v_j = \sum_{i=1}^N \phi(x_i) \phi(x_i)\T v_j \mathtext{(sum of outer products of $\phi(x_i)$)}
+&&}
+From this we can extract a calculation for $v_j$ by replacing the dot product of $v_j$ and $\phi(x_i)$ by a new variable $b_{ij}$:
+\eqnsnn{&
+\sum_{i=1}^N \phi(x_i) \phi(x_i)\T v_j = \sum_{i=1}^N \phi(x_i) b_{ij} = \lambda v_j
+&&\\&
+\sum_{i=1}^N \phi(x_i) \alpha_{ij} = v_j \with \alpha_{ij} = \frac{b_{ij}}{\lambda}
+&&\\&
+\sum_{i=1}^N \phi(x_i) \alpha_{ij} = X\T\alpha_j = v_j
+&&} 
+When we substitue this into the initial eigenvalue problem we get the following we get to the following.
+\eqnsnn{
+X\T X  v_j = \lambda v_j \quad&=\quad X\T X X\T \alpha_j = \lambda X\T\alpha_j
+&&\\
+&\equivalent\quad XX\T XX\T \alpha_j = \lambda XX\T\alpha_j
+&&}
+This is pretty much what we have been waiting for. 
+We generated an expression using matrices of dot products of features, which we can replace by a kernel matrix \\$XX\T_{ik} = \phi(x_i)\T\phi(x_k) = k(x_i,x_k) = K_{ik}$.
+This brings us to a new eigenvalue problem which only contains kernel expressions.
+\eqnsnn{&
+K K \alpha_j = \lambda K\alpha_j \quad\equivalent\quad K\alpha_j = \lambda\alpha_j
+&&}
+
+We probably can get to this a little bit more straight forward since we know we want $XX\T$ in our equation:
+\eqnsnn{
+X\T X  v_j = \lambda v_j \quad\equivalent\quad X\T XX\T  v_j &= \lambda X\T v_j 
+&&\\ \quad\equivalent\quad XX\T XX\T  v_j &= \lambda XX\T v_j
+&&\\ \quad\equivalent\quad K v_j &= \lambda v_j
 &&}
 
 
