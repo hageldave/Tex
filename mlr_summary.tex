@@ -55,7 +55,7 @@
     \vspace{0.25cm}
     \large{David H\"agele}, \normalsize{\today}
    \end{center}
-   
+
 \tableofcontents
 
 \section{Machine Learning Briefly}
@@ -477,7 +477,7 @@ k_\mathcal{N}(x,x') = \mathcal{N}(||x-x'||, \mu, \sigma^2) = \frac1{\sqrt{2\pi\s
 &&}
 
 The \enquote{trick} in the kernel trick is now to get rid of the features $\phi(x)$ by reformulating the problem to only include dot products $\phi(x)\T\phi(x')$, which are then replaced by kernels $k(x,x')$.
-Lets illustrate this process on various examples in the following.
+Lets illustrate this process by deriving kernel PCA in the following.
 
 \subsection{Kernel PCA}
 In PCA we have following eigenvalue problem.
@@ -510,11 +510,73 @@ K K \alpha_j = \lambda K\alpha_j \quad\equivalent\quad K\alpha_j = \lambda\alpha
 
 We probably can get to this a little bit more straight forward since we know we want $XX\T$ in our equation:
 \eqnsnn{
-X\T X  v_j = \lambda v_j \quad\equivalent\quad X\T XX\T  v_j &= \lambda X\T v_j 
-&&\\ \quad\equivalent\quad XX\T XX\T  v_j &= \lambda XX\T v_j
-&&\\ \quad\equivalent\quad K v_j &= \lambda v_j
+X\T X  v_j = \lambda v_j \quad\quad\equivalent\quad XX\T X v_j &= \lambda Xv_j
+&&\\\equivalent\quad XX\T XX\T\alpha_j &= \lambda XX\T \alpha_j \with v_j = X\T \alpha_j
+&&\\\equivalent\quad KK\alpha_j &= \lambda K \alpha_j
+&&\\\equivalent\quad K\alpha_k &= \lambda \alpha_j
 &&}
+Alright we can solve for the eigenvectors in kernel form, but how do we project $x$ to $z$?
+\\In feature representation we previously had
+\eqnsnn{&
+z = V_P\T \phi(x) \with V_P ~\text{composed of eigenvectors $v_j$} 
+&&}
+We now have $A_P$ composed of eigenvectors $\alpha_j$ where $v_j = X\T\alpha_j$, which means that $V_P = 
+X\T A_P$. When substituting this we get:
+\eqnsnn{&
+z = (X\T A_P)\T \phi(x) = A_P\T\; X\;\phi(x) = A_P\T\;\kappa(x) \with \kappa(x) = X \phi(x) = \mat{k(x,x_1)\\\vdots\\k(x,x_N)}
+&&}
+Mission completed, we got rid of all occurences of features $\phi$ and instead use kernel values $k(x,x')$.
 
+\section{Clustering}
+Clustering is used to guess classes for data points (unlabeled so there is no ground truth $\neq$ classification).
+So the goal is to find $K$ classes and assign the data points to them in a fashion that similar data is in the same cluster.
+
+Two well known clustering algorithm are K-Means and the Gaussian Mixture Model.
+Lets briefly discuss K-Means before diving into GMM.
+
+\subsection{K-Means}
+In K-Means, we define clusters by centroids and cluster membership by minimal distant centroid.
+So a point belongs to the cluster which has the closest centroid to it.
+The loss that is minimized is:
+\eqnsnn{
+L(\mu) = \sum_{i=1}^N \sum_{k=1}^K C_{ik}*||x_i-\mu_k||^2
+&&}
+With data points $x_i \in \dom{R}^M$ centroids $\mu_k \in dom{R}^M$ and membership matrix $C$ (one entry of a row is $1$ others are $0$).
+The algorithm works like this:
+\begin{enumerate}
+\item initialize centeroids $\mu$ randomly
+\item calculate C (set matrix entries $C_{ik}$ to one where corresponding $\mu_k$ is clostest to $x_i$).
+\item calculate new centroids as $\mu_k = \frac1{\sum_{i=1}^N C_{ik}} \sum_{i=1}^N C_{ik} x_i$
+\item repeat from (2) until centroids are no longer changing.
+\end{enumerate}
+
+This algorithm will only find local minima, which is why we usually do several runs to hopefully find the global minimum or at least a quite good local minimum.
+The main problem tough is to find a reasonable $K$.
+Of course, the loss decreases with higher $K$, when $K=N$ then every point is its own cluster and the loss is $0$.
+Usually we examine the change of loss for increasing $K$ and stop increasing when the change is not substantial anymore.
+
+\subsection{Gaussian Mixture Model}
+In GMM instead of $K$ centroids we have $K$ gaussians from which we want to describe the whole distribution of points.
+Each gaussian has a weight called \enquote{mixing value} $\pi_k$, its mean $\mu_k$ and covariance matix $\Sigma_k$.
+The whole distribution of all points is given by:
+\eqnsnn{&
+p(x) = \sum_{k=1}^K \pi_k * \mathcal{N}(x|\mu_k,\Sigma_k) \with 0 \leq\pi_k \leq 1 \mathtext{and} \sum_{k=1}^K \pi_k = 1
+&&}
+The loss that is minimized is the neg-log-likelihood of the data (equivalent to maximizing likelihood):
+\eqnsnn{&
+L(\mu,\Sigma,\pi) = -\sum_{i=1}^N\ln\Big(\sum_{k=1}^K * \pi_k * \mathcal{N}(x_i|\mu_k,\Sigma_k)\Big)
+&&}
+The algorithm works similar to K-Means but more parameters need to be updated:
+\begin{enumerate}
+\item Initialize mixing values uniformly $\pi_{1:K} = 1/K$, covariances to identity $\Sigma_{1:K}=I$ and means $\mu_{1_K}$ randomly.
+\item Calculate the posterior probabilities that point $x_i$ belongs to cluster $k$, $P_{ik} = \mathcal{N}(x_i|\mu_k,\Sigma_k)*\pi_k/Z_i$ with normalization $Z_i=\sum_{k'=1}^N\mathcal{N}(x_i|\mu_{k'},\Sigma_{k'})*\pi_{k'}$.
+\item Sum up the posteriors for each cluster $N_k = \sum_{1=1}^N P_{ik}$.
+\item Update the mixing values $\pi_k = N_k/N$.
+\item Update the means $\mu_k = (1/N_k) * \sum_{i=1}^N P_{ik} x_i$.
+\item Update the covariances $\Sigma_k = (1/N_k) \sum_{i=1}^N P_{ik} * (x_i-\mu_k)(x_i-\mu_k)\T$.
+\item Repeat from (2) until convergence.
+\end{enumerate}
+The main difference to K-Means is, that we do not have exclusive memberhips $C_{ik}$ but membership probabilities $P_{ik}$ which is like a soft assignment of points to clusters.
 
 
 
