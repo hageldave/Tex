@@ -395,7 +395,7 @@ R(\flow,c) = \int_\Omega \inf_{\aaux,\baux}\big[\; c*S_1(\flow)
 \end{flalign} 
 In this representation the threshold parameter $T$ appears in the convex combination together with $S_2$ and can be interpreted as an extra cost to be paid in order to use second order regularization.
 The sigmoid slope parameter $\lambda$ now works as a weight for the selection term $\phi$ which has become independent of $\lambda$.
-In fact the selection term has simplified quite a bit and it can be seen that it is a symmetric function which is also illustarted in \cref{fig:c_phi}.
+In fact the selection term has simplified quite a bit and it can be seen that it is a symmetric function which is illustarted in \cref{fig:c_phi}.
 From the figure it can also be seen that $\phi$ is minimal for $c=\frac{1}{2}$ which can be interpreted as a prior on $c$ for when the model is indecisive on regularization order.
 So by definition of $\phi$ neither of the regularizers is preferred, but due to the threshold $T$ the descision is biased towards the first order regularization.
 
@@ -441,19 +441,21 @@ R_\text{nl}(\flow,\cnl) = \int_\Omega \inf_{\aaux,\baux}\big[\; \cNl*S_1(\flow)
 + \lambda*\phi(\cnl)\;\big] \;d\x \nonumber&&
 \end{flalign}
 Here $\mathcal{N}(\x)$ denotes the patch of $\x$ and $|\mathcal{N}(\x)|$ the patch size which is used for normalization.
-To find $\cnl$, $R_\text{nl}(\flow,\cnl)$ is minimized with respect to it.
+To find $\cnl$, $R_\text{nl}(\flow,\cnl)$ is minimized with respect to it and yields:
 \begin{flalign}
-\frac{\partial R(\flow,\cnl)}{\partial \cnl} = \cdots
-&&\\
-\text{derivation of~} \cnl \dots
-&&\\
-\cnl = \cdots
+\cnl(\y) = \frac{1}{1+e^{\Delta(\y)/\lambda}} \quad\text{with}\quad \Delta(\y) = \int_{\mathcal{N}(\y)} \frac{ T + S_2 - S_1 }{|\mathcal{N}(\x)|} \;d\x
 &&
 \end{flalign}
+It may be surprising at first that the integrated $\cnl$ itself contains a nested integral, but it is easy to convince yourself when thinking about a 
+discrete version $c_{\x}$.
+When taking the derivative with respect to a single $c_{\x}$, then due to the integral in $\cNl$ we need to identify all terms which contain $c_{\x}$ (which is defined by the patch $\mathcal{N}(\x)$).
+The reason for normalization $\frac{1}{|\mathcal N(\x) |}$ being inside the integral is that patches at the boundaries vary in size (become smaller as less pixels are defined there).
 
 \subsection{Region-Based Scheme}
 The non-local scheme takes a neighborhood around a pixel into account for the descision on regularization order.
-To push it yet a little further, the region based scheme decides on order leveraging a level set function $z(\x):\Omega\to\mathbb{R}$ which devides the image space into first and second order regularized regions.
+To push it yet a little further, the region based scheme decides on order leveraging a level-set function $z(\x):\Omega\to\mathbb{R}$ which devides the image space into first and second order regularized regions.
+Recall that a level-set function defines a closed curve (or curves) by $\{\x \;|\; z(\x)=0\}$ that defines the descision boundary.
+The regions are thus defined by $\{\x \;|\; z(\x) < 0\}$ and $\{\x \;|\; z(\x) > 0\}$ which will be leveraged to regionally decide on regularization order.
 The corresponding regularizer reads as follows.
 \begin{flalign}
 &R(\flow,z) = \int_\Omega c_\text{rgn}(z)*S_1 + (1-c_\text{rgn}(z))*(S_2 + T) + \theta*|\nabla c_\text{rgn}(z)| \;d\x
@@ -462,8 +464,15 @@ The corresponding regularizer reads as follows.
 &&
 \end{flalign}
 Here $c_\text{rgn}$ is as well a sigmoid function, but choosen to approximate the heaviside funtion ($\lambda\to 0$) in order to obtain hard boundaries for the regions defined by $z$.
-The selection term from the previous schemes has been replaced by a smoothness term on $c_\text{rgn}$ which penalizes level set functions with lots of sign changes.
-Due to this penalization short paths for $z(\x)=0$ are favored resulting in smooth region boundaries.
+The selection term from the previous schemes has been replaced by a smoothness term on $c_\text{rgn}$ which penalizes non-smooth level set functions which results in less sign changes.
+Due to this penalization short paths for $\{\x \;|\; z(\x)=0\}$ are favored resulting in smooth region boundaries.
+
+Unfortunately this sophisticated scheme comes at a larger computational cost as $z$ has to be evolved due to its smoothenss term \cite{someone}.
+
+
+\section{Experiments}
+To evaluate this new approach, the authors conducted a few experiments which will be presented in this section.
+
 
 \section{Exposition}
 
