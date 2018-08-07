@@ -517,10 +517,16 @@ The quality of the approach has not only been aseesed visually, but also quantit
 The four regularizers (global , local, non-local, region) therefore were put up against a purely first and purely second order regularizer on the class room sequences.
 The second order regularizer used for comparison is an anisotropic variant of total generalized variation (TGV~\cite{tgv}) which also uses a coupling term and is not a purposefully chosen inferior regularizer.  
 The AEE results for the different sequences are shown in \cref{tbl:classroom_aee}.
+From the table it can be seen that the best results are found in the order adaptive segment except for the fourth sequence where the first order regularizer shares first place with the adaptive local regularizer.
+Also the second order regularizer is already outperformed by the global order adaptive regularizer.
+For the rather fronto-parallel sequences, the local adaptive regularizer shines, but has really poor performance on the third sequence which is heavily affine in motion.
+The non-local and region order adaptive regularizers on the other hand, do quite well in all of the sequences, the region order adaptive however performs best on the affine motion sequence.
+Also note that the global order adaptive regularizer does not simply amount to choose best out of first and second order, but instead relies on the same hyperparamters as the other adaptive regularizers (which were optimized jointly).
+Due to the number variables to be evolved in order to approximate the flow ($\flow, \aaux, \baux, c$) the runtimes of the adaptive regularizers are quite high compared to the simple first order regularizer which does not have a coupling term (and thus no auxiliary functions), especially the the region adaptive order regularizer takes quite a while as it involves the evolution of a smooth level set function.  
 
 \begin{table}[htb]
 %% Table captions on top in journal version
-\caption{\label{tab:vis_accept} Average Endpoint Error - Classroom sequences}
+\caption{\label{tbl:classroom_aee} Average endpoint error - Classroom sequences~\cite{daspaper}}
 \scriptsize
 \begin{center}
 \begin{tabular}{r|cccc|c}
@@ -541,8 +547,35 @@ adaptive region    & 0.125 & 0.366 & \textbf{0.662} & 0.098 & 180s
 \end{center}
 \end{table}
 
+Of course the results on the self made image sequences are not easily put into perspective with other recent approaches regarding optic flow, which is why the authors also put the regularizers up against the Middlebury benchmark~\cite{middlebury}, the Sintel benchmark~\cite{sintel} and the KITTI benchmarks of 2012~\cite{kitti12} and 2015~\cite{kitti15}.
 
- 
+
+\begin{table}[htb]
+%% Table captions on top in journal version
+\caption{\label{tbl:benchmarks} Average endpoint error (AEE) and bad pixel error (BP) in four different benchmarks~\cite{daspaper}}
+\scriptsize
+\begin{center}
+\begin{tabular}{r|cccc}
+regularization & Middlebury & Sintel & KITTI '12 & KITTI '15
+\\
+& (AEE) & (AEE) & (BP) & (BP)
+\\\hline
+first order        & 0.213 & 4.327 & 18.026 & 30.053
+\\
+second order       & 0.222 & 6.518 & 9.461 & 22.736
+\\\hline
+adaptive global    & 0.211 & 4.213 & 9.423 & 22.424
+\\
+adaptive local     & 0.211 & 4.082 & 11.537 & 24.938
+\\
+adaptive non-local & 0.211 & 4.145 & 9.468 & 22.158
+\\
+adaptive region    & 0.208 & 4.358 & 9.415 & 22.343 
+\end{tabular}
+\end{center}
+\end{table}
+
+
 
 \section{Exposition}
 
