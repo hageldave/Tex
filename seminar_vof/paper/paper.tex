@@ -473,15 +473,76 @@ Unfortunately this sophisticated scheme comes at a larger computational cost as 
 \section{Experiments}
 To evaluate this new approach, the authors conducted a few experiments which will be presented in this section.
 
-To get an insight into the order selection of the algorithm with the different selection schemes, a synthetic image sequence was created from which the actual flow field could be extracted as ground truth.
+To get an insight into the order selection of the algorithm with the different selection schemes, four synthetic image sequences were created from which the actual flow fields could be extracted as ground truth.
+\Cref{fig:classroom} shows the 4 image pairs and their corresponding flow fields.
 
-\begin{figure}
+\begin{figure*}[htb]
 \centering
-\includegraphics[width=\linewidth]{images/classroom.png}
+\includegraphics[width=0.9\linewidth]{images/classroom.png}
+\caption{\textbf{Classroom sequences}~\cite{daspaper}. 
+First and second rows contains first frames and second frames.
+Third row contains the corresponding flow fields with flow direction encoded by hue, and flow magnitude by brightness.
+Each column corresponds to another sequence.
+Sequences 1,2 and 4 result from fronto-parallel motion as can be seen from the flow directions being the same for each pixel.
+Sequence 3 results from \enquote{fronto-orthogonal} or affine motion similar to the linear flow field depicted in \cref{fig:flowfields}.}
 \label{fig:classroom}
-\caption{Classroom sequence}
-\end{figure}
+\end{figure*}
 
+By looking at the gradient magnitude $\big|\deriv{\flow(\x)}{\x}\big|$ of the ground truth flow field, areas of vanishing gradients can be identified.
+Small values of the gradient magnitude thus indicate fronto-parallel motion whereas large values indicate affine motion.
+When these are compared to the order deciding $c$ term of the different schemes, we can get a good impression on how the algorithm decided.
+
+\begin{figure*}[htb]
+\centering
+\includegraphics[width=0.9\linewidth]{images/classroom_c.png}
+\caption{Adaption behavior of the different schemes~\cite{daspaper}. 
+Each column corresponds to the respective sequence introduced in \cref{fig:classroom}.
+First row shows the gradient magnitude of the ground truth flow fields, dark pixels indicate small magnitudes,
+bright pixels high magnitudes.
+The following rows correspond to the regularization order selection parameters $c$, dark pixels indicate first order regularization, bright pixels indicate second order regularization.
+The second row corresponds to the global scheme, third to local, fourth to non-local and fifth to region based. 
+}
+\label{fig:classroom_c}
+\end{figure*}
+
+\Cref{fig:classroom_c} shows a comparison of the adaption behavior of the four different adaption schemes with respect to the ground truth gradient magnitude which works as an indicator for regularization order.
+For the global scheme (2nd row) the images are either completely white or completely black as the selection is global and thus the same for each pixel.
+For the global scheme, the algorithm surprisingly picked second order regularization for all sequences except for the fourth sequence.
+On the other hand, the fourth sequence has almost no depth to it and is thus truly fronto-parallel, so all schemes decided for first order for the majority of the pixels.
+What can also be seen is that for the local scheme (third row) the selection is pretty noisy, whereas the non-local and region based scheme show way more consistent order selection.
+Another insight is, that at motion discontinuities (i.e. edges) first order regularization is chosen predominantely.
+Finally it is important to note that different order selection than indicated by the ground truth does not necessarily imply a bad result, since second order regularization contains first order as previously explained.
+
+The quality of the approach has not only been aseesed visually, but also quantitatively by evaluating the average end point error (AEE).
+The four regularizers (global , local, non-local, region) therefore were put up against a purely first and purely second order regularizer on the class room sequences.
+The second order regularizer used for comparison is an anisotropic variant of total generalized variation (TGV~\cite{tgv}) which also uses a coupling term and is not a purposefully chosen inferior regularizer.  
+The AEE results for the different sequences are shown in \cref{tbl:classroom_aee}.
+
+\begin{table}[htb]
+%% Table captions on top in journal version
+\caption{\label{tab:vis_accept} Average Endpoint Error - Classroom sequences}
+\scriptsize
+\begin{center}
+\begin{tabular}{r|cccc|c}
+regularization & Seq. 1 & Seq. 2 & Seq. 3 & Seq. 4 & runtime 
+\\\hline
+first order        & 0.129 & 0.358 & 2.038 & \textbf{0.088} & 17s
+\\
+second order       & 0.141 & 0.370 & 0.669 & 0.102 & 75s
+\\\hline
+adaptive global    & 0.141 & 0.365 & 0.667 & 0.095 & 100s
+\\
+adaptive local     & \textbf{0.111} & \textbf{0.260} & 1.115 & \textbf{0.088} & 105s
+\\
+adaptive non-local & 0.116 & 0.275 & 0.737 & 0.095 & 120s
+\\
+adaptive region    & 0.125 & 0.366 & \textbf{0.662} & 0.098 & 180s
+\end{tabular}
+\end{center}
+\end{table}
+
+
+ 
 
 \section{Exposition}
 
