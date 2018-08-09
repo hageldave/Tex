@@ -194,7 +194,7 @@ Constant flow is typical for motion parallel to the image plane, linear flow for
 Depending on the situation in the image sequence, a constant flow field may be more reasonable than a linear one.
 Imagine for example a sequence captured from the view point of a car driver who waits at a crossing while other cars pass the crossing from left to right in front of him.
 The optic flow in this situation would be constant as all cars move in the same direction parallel to the image plane.
-Now imagine the car driver moving forwards as the crosisng is now free, the whole scene around him will appear to move towards him.
+Now imagine the car driver moving forwards as the crossing is now free, the whole scene around him will appear to move towards him.
 The optic flow is now linear as the surroundings move perpendicular to the image plane.
 However, the flow behaviour is not exclusive, both constant and linear flow can be present in the same sequence, for example when another car heading in the same direction switches lanes.
 To account for such situations, a variational model has to make more sophisticated assumptions than simple first or second order smoothness.
@@ -245,7 +245,7 @@ In short, it summarizes gradient information within a neighborhood of a pixel.
 The eigenvector $\ev_1$ points in the direction of steepest change (i.e. over an edge) while $\ev_2$ is orthogonal to $\ev_1$ (i.e. points along an edge).
 
 Lets postpone the discussion of the regularization tensor for a second and get some intuition on the way $S_1$ works.
-As can be seen from \cref{eq:S1}, the term uses two penalizer functions, the Charbonnier penalizer which was introduced in \cref{sec:dataterm} in \cref{eq:charbonnier} and the Perona~Malik penalizer $\peronamalik$.
+As can be seen from \cref{eq:S1}, the term uses two penalizer functions, the Charbonnier penalizer which was introduced in \cref{sec:dataterm} in \cref{eq:charbonnier} and the Perona~Malik penalizer $\peronamalik$~\cite{peronamalik}.
 \begin{flalign}\label{eq:peronamalik}
 \peronamalik(s^2) &= \epsilon^2\ln(1+s^2/\epsilon^2)&&
 \end{flalign}
